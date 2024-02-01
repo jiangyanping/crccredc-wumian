@@ -1,6 +1,10 @@
 <template>
     <div class="comment" style="height: 100%;width: 100%;">
-        <!-- <div class="comment-mask" v-show="popupCom"></div> -->
+        <div class="mask-shareWord" v-show="shareWord" @click.stop="shareWord = !shareWord">
+            <div>
+                <img :src="require('../assets/img/exportSign.png')" alt="">
+            </div>
+        </div>
         <div class="popup popup-com">
             <div class="com-popup-con">
                 <div class="com-popup-box">
@@ -56,6 +60,19 @@
                                                         <path
                                                             d="M640 704V365.056c0-12.8-8.704-21.504-21.504-21.504s-21.504 8.704-21.504 21.504v339.456c0 12.8 8.704 21.504 21.504 21.504 12.8-0.512 21.504-11.264 21.504-22.016z m-213.504 0V362.496c0-12.8-8.704-21.504-21.504-21.504s-21.504 8.704-21.504 21.504v341.504c0 12.8 8.704 21.504 21.504 21.504 13.312 0 21.504-10.752 21.504-21.504z"
                                                             p-id="1629" fill="#666666"></path>
+                                                    </svg>
+                                                </span>
+                                                <!-- <span class="com-infor-btn com-export" @click.stop="handleExportComments(item)"> -->
+                                                <span class="com-infor-btn com-export" @click.stop="handleExportComments(item)">
+                                                    <svg t="1706609498549" class="icon" viewBox="0 0 1024 1024"
+                                                        version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1444"
+                                                        width="64" height="64">
+                                                        <path
+                                                            d="M128 160C128 107.008 170.368 64 222.72 64h568.064c52.288 0 94.72 43.008 94.72 96v256c0 17.664-14.144 32-31.616 32a31.808 31.808 0 0 1-31.552-32v-256c0-17.664-14.08-32-31.552-32H222.72a31.808 31.808 0 0 0-31.552 32v640c0 17.664 14.144 32 31.552 32h255.168c17.408 0 31.552 14.336 31.552 32s-14.08 32-31.552 32H222.656A95.36 95.36 0 0 1 128 800v-640z"
+                                                            fill="#666666" p-id="1445"></path>
+                                                        <path
+                                                            d="M506.752 681.984c0-17.664 14.08-32 31.552-32h248.448L705.28 566.592a32.32 32.32 0 0 1 0.192-45.248 31.232 31.232 0 0 1 44.608 0.192l136.768 139.968a32.256 32.256 0 0 1-0.32 45.44l-136.768 135.68a31.232 31.232 0 0 1-44.672-0.512 32.32 32.32 0 0 1 0.512-45.248l83.52-82.88H538.24a31.808 31.808 0 0 1-31.552-32zM285.824 320c0-17.664 14.08-32 31.552-32H464c17.472 0 31.552 14.336 31.552 32s-14.08 32-31.552 32H317.44a31.808 31.808 0 0 1-31.552-32zM317.376 446.272a31.808 31.808 0 0 0-31.552 32c0 17.664 14.08 32 31.552 32h181.632a31.808 31.808 0 0 0 31.552-32c0-17.664-14.144-32-31.552-32H317.312z"
+                                                            fill="#666666" p-id="1446"></path>
                                                     </svg>
                                                 </span>
                                                 <span class="com-infor-btn com-change" v-if="item.comState == '待'"
@@ -114,6 +131,21 @@
                                                                         <path
                                                                             d="M640 704V365.056c0-12.8-8.704-21.504-21.504-21.504s-21.504 8.704-21.504 21.504v339.456c0 12.8 8.704 21.504 21.504 21.504 12.8-0.512 21.504-11.264 21.504-22.016z m-213.504 0V362.496c0-12.8-8.704-21.504-21.504-21.504s-21.504 8.704-21.504 21.504v341.504c0 12.8 8.704 21.504 21.504 21.504 13.312 0 21.504-10.752 21.504-21.504z"
                                                                             p-id="1629" fill="#666666"></path>
+                                                                    </svg>
+                                                                </span>
+                                                                <!-- <span class="com-infor-btn com-export"
+                                                                    @click.stop="handleExportComments(o)"> -->
+                                                                <span class="com-infor-btn com-export" @click.stop="handleExportComments(o)"> 
+                                                                    <svg t="1706609498549" class="icon"
+                                                                        viewBox="0 0 1024 1024" version="1.1"
+                                                                        xmlns="http://www.w3.org/2000/svg" p-id="1444"
+                                                                        width="64" height="64">
+                                                                        <path
+                                                                            d="M128 160C128 107.008 170.368 64 222.72 64h568.064c52.288 0 94.72 43.008 94.72 96v256c0 17.664-14.144 32-31.616 32a31.808 31.808 0 0 1-31.552-32v-256c0-17.664-14.08-32-31.552-32H222.72a31.808 31.808 0 0 0-31.552 32v640c0 17.664 14.144 32 31.552 32h255.168c17.408 0 31.552 14.336 31.552 32s-14.08 32-31.552 32H222.656A95.36 95.36 0 0 1 128 800v-640z"
+                                                                            fill="#666666" p-id="1445"></path>
+                                                                        <path
+                                                                            d="M506.752 681.984c0-17.664 14.08-32 31.552-32h248.448L705.28 566.592a32.32 32.32 0 0 1 0.192-45.248 31.232 31.232 0 0 1 44.608 0.192l136.768 139.968a32.256 32.256 0 0 1-0.32 45.44l-136.768 135.68a31.232 31.232 0 0 1-44.672-0.512 32.32 32.32 0 0 1 0.512-45.248l83.52-82.88H538.24a31.808 31.808 0 0 1-31.552-32zM285.824 320c0-17.664 14.08-32 31.552-32H464c17.472 0 31.552 14.336 31.552 32s-14.08 32-31.552 32H317.44a31.808 31.808 0 0 1-31.552-32zM317.376 446.272a31.808 31.808 0 0 0-31.552 32c0 17.664 14.08 32 31.552 32h181.632a31.808 31.808 0 0 0 31.552-32c0-17.664-14.144-32-31.552-32H317.312z"
+                                                                            fill="#666666" p-id="1446"></path>
                                                                     </svg>
                                                                 </span>
                                                                 <span class="com-infor-btn com-change"
@@ -220,6 +252,7 @@
 
 <script>
 import API from "../request/api.js";
+import wx from 'weixin-js-sdk';
 import PhotoSwipe from 'photoswipe'
 import PhotoSwipeUI_Default from 'photoswipe/dist/photoswipe-ui-default'
 //import { v4 as uuidv4 } from 'uuid';
@@ -274,7 +307,20 @@ export default {
                 text: '',
                 comState: '',
                 controlPointSort: '',
-            }
+            },
+
+            //分享
+            shareWord: false,
+            url: '',
+            appId: 'wx72cc3345b698d35e',//'wxc9760cd0f9ffcfbc',   //开发环境的    wx72cc3345b698d35e   //生产环境的 
+            timestamp: '',
+            nonceStr: 'Wm3WZYTPz0wzccnW',
+            signature: '',
+
+            shareTitle: '标题',  //分享标题
+            shareDesc: '描述',   //分享描述
+            shareLink: '',   //分享链接
+            shareImgUrl: 'http://conmanage.rebim.cn/A-others/images/one.png',   //分享图标
         };
 
     },
@@ -400,6 +446,134 @@ export default {
                 alert('删除成功');
                 console.log(this.commentsData);
             })
+        },
+
+        /**
+         * 导出评论
+         */
+        handleExportComments(item){
+            let vm= this;
+            vm.shareWord = true;
+            let key = sessionStorage.getItem('weixinkey');
+            if (key) {
+                API.exportComments({ cIDs: item.id, key: key }).then(result => {
+                    if (result.data.code == 0) {
+                        vm.shareLink = result.data.data;
+                        console.log(vm.shareLink);
+                        const indexOfHash = window.location.href.indexOf('#');
+                        // 如果找到了 #，则截取字符串；否则，返回原始字符串
+                        vm.url = indexOfHash !== -1 ? window.location.href.substring(0, indexOfHash) : window.location.href;
+                        console.log(vm.url);
+                        vm.timestamp = (Date.now()).toString().substring(0, 10);
+                        vm.getSignature();
+                    }
+                });
+            } else {
+                this.$router.push('/home');  //评论页分享出去，如果sessionStorage里有key，则请求用户登录信息，否则跳转至home页。
+            }
+        },
+
+        /**
+         * 获取签名
+         */
+         getSignature() {
+            API.getSignature().then(result => {
+                if (result.data.code == 0) {
+                    this.signature = 'jsapi_ticket=' + result.data.data + '&noncestr=' + this.nonceStr + '&timestamp=' + this.timestamp + '&url=' + this.url;
+                    console.log(this.signature);
+                    this.signature = this.sha1(this.signature);
+                    console.log(this.signature);
+                    // 在组件加载完成后调用微信JS-SDK的初始化
+                    this.initWeixinSDK();
+                }
+            });
+        },
+
+        initWeixinSDK() {
+            // 初始化微信JS-SDK
+            wx.config({
+                debug: false, // 调试模式
+                appId: this.appId,
+                timestamp: this.timestamp, //生成签名的时间戳
+                nonceStr: this.nonceStr, //生成签名的随机串
+                signature: this.signature,
+                jsApiList: ['updateAppMessageShareData', 'updateTimelineShareData'] // 需要使用的JS接口列表
+            });
+
+            // 微信JS-SDK初始化成功后的回调
+            wx.ready(() => {
+                console.log('微信JS-SDK初始化成功');
+                wx.updateAppMessageShareData({
+                    title: this.shareTitle,
+                    desc: this.shareDesc,
+                    link: this.shareLink, //'http://172.16.1.6:8080'
+                    imgUrl: this.shareImgUrl,
+                    success: () => {
+                        // 分享成功回调
+                        console.log('分享给朋友成功');
+                    },
+                    cancel: () => {
+                        // 用户取消分享
+                        //console.log('用户取消分享给朋友');
+                    }
+                });
+            });
+        },
+
+        /**
+         * 加密
+         * @param {*} s 
+         */
+        encodeUTF8(s) {
+            var i, r = [], c, x;
+            for (i = 0; i < s.length; i++)
+                if ((c = s.charCodeAt(i)) < 0x80) r.push(c);
+                else if (c < 0x800) r.push(0xC0 + (c >> 6 & 0x1F), 0x80 + (c & 0x3F));
+                else {
+                    if ((x = c ^ 0xD800) >> 10 == 0) //对四字节UTF-16转换为Unicode
+                        c = (x << 10) + (s.charCodeAt(++i) ^ 0xDC00) + 0x10000,
+                            r.push(0xF0 + (c >> 18 & 0x7), 0x80 + (c >> 12 & 0x3F));
+                    else r.push(0xE0 + (c >> 12 & 0xF));
+                    r.push(0x80 + (c >> 6 & 0x3F), 0x80 + (c & 0x3F));
+                }
+            return r;
+        },
+
+        /**
+         *  字符串加密成 hex 字符串
+         */
+        sha1(s1) {
+            var data = new Uint8Array(this.encodeUTF8(s1))
+            var i, j, t;
+            var l = ((data.length + 8) >>> 6 << 4) + 16, s = new Uint8Array(l << 2);
+            s.set(new Uint8Array(data.buffer)), s = new Uint32Array(s.buffer);
+            for (t = new DataView(s.buffer), i = 0; i < l; i++)s[i] = t.getUint32(i << 2)
+            s[data.length >> 2] |= 0x80 << (24 - (data.length & 3) * 8);
+            s[l - 1] = data.length << 3;
+            var w = [], f = [
+                function () { return m[1] & m[2] | ~m[1] & m[3]; },
+                function () { return m[1] ^ m[2] ^ m[3]; },
+                function () { return m[1] & m[2] | m[1] & m[3] | m[2] & m[3]; },
+                function () { return m[1] ^ m[2] ^ m[3]; }
+            ], rol = function (n, c) { return n << c | n >>> (32 - c); },
+                k = [1518500249, 1859775393, -1894007588, -899497514],
+                m = [1732584193, -271733879, null, null, -1009589776];
+            m[2] = ~m[0], m[3] = ~m[1];
+            for (i = 0; i < s.length; i += 16) {
+                var o = m.slice(0);
+                for (j = 0; j < 80; j++)
+                    w[j] = j < 16 ? s[i + j] : rol(w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16], 1),
+                        t = rol(m[0], 5) + f[j / 20 | 0]() + m[4] + w[j] + k[j / 20 | 0] | 0,
+                        m[1] = rol(m[1], 30), m.pop(), m.unshift(t);
+                for (j = 0; j < 5; j++)m[j] = m[j] + o[j] | 0;
+            }
+            t = new DataView(new Uint32Array(m).buffer);
+            for (let i = 0; i < 5; i++)m[i] = t.getUint32(i << 2);
+
+            var hex = Array.prototype.map.call(new Uint8Array(new Uint32Array(m).buffer), function (e) {
+                return (e < 16 ? "0" : "") + e.toString(16);
+            }).join("");
+            return hex;
         },
 
         /**
@@ -752,7 +926,7 @@ export default {
                         }
                     }
                 }
-            } 
+            }
         },
         //处理数据,将返回数据根据某个属性进行分组
         addDataDeal: function (d) {
@@ -854,6 +1028,25 @@ export default {
     float: right;
     color: #000;
 }
+/* 分享遮罩-shart */
+.mask-shareWord {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 10003;
+}
+
+.mask-shareWord img {
+    width: 75%;
+    height: 80%;
+    padding: 10px 15px;
+    float: right;
+}
+/* 分享遮罩-end */
 </style>
 <style>
 .goBack {
@@ -869,4 +1062,5 @@ export default {
     height: .54rem;
     border-radius: 50%;
     padding: 5px;
-}</style>
+}
+</style>

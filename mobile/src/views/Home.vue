@@ -68,6 +68,12 @@
                 </v-card-text>
             </v-card> -->
         </div>
+        <v-row class="text-center my-3 mb-12" justify="center">
+            <v-col cols="12" style="padding:16px;">
+                <v-btn block large class="pa-2 primary text-no-wrap rounded-pill j-export-comments"
+                    @click.prevent="getWeixinKey(`/exportComments`)">导出评论</v-btn>
+            </v-col>
+        </v-row>
         <div class="j-realName" v-show="popupRealName">
             <div class="mask-inpField" v-show="popupRealName" @click.prevent="popupRealName = !popupRealName"></div>
             <v-row justify="space-between" class="j-realName-inp mx-4">
@@ -156,6 +162,7 @@ export default {
             let key = '';
             if (sessionStorage.getItem('weixinkey')) {
                 key = sessionStorage.getItem('weixinkey');
+                console.log(key);
             } else {
                 key = this.handleKey();
             }
@@ -209,6 +216,7 @@ export default {
         handleLookModel() {
             this.$router.push('/Engine/ho/00');
         },
+
         /**
          * 查询评论
          */
@@ -342,6 +350,7 @@ export default {
 </script>
 
 <style type="text/css" scoped>
+@import '../assets/css/comment.css';
 .row {
     margin: 0;
 }
@@ -422,7 +431,7 @@ export default {
 }
 
 .j-control {
-    margin-bottom: 50px;
+   
 }
 
 .j-control-card {
@@ -487,6 +496,10 @@ export default {
 }
 
 .j-look-model {
+    width: 100%;
+    height: 0.88rem!important;
+}
+.j-export-comments{
     width: 100%;
     height: 0.88rem!important;
 }

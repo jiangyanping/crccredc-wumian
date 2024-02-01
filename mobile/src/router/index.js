@@ -6,6 +6,8 @@ import Control from '../views/Control.vue'
 import Comment from '../views/Comment.vue'
 import Engine from '../views/Engine.vue'
 import OtherRes from '../views/OtherRes.vue'
+import ExportComments from '../views/ExportComments.vue'
+import ShareWordLink from '../views/ShareWordLink.vue'
 
 Vue.use(VueRouter);
 
@@ -49,6 +51,16 @@ const routes = [
     path: '/otherRes/:view/:mark/:resFid',
     name: 'OtherRes',
     component: OtherRes
+  },
+  {
+    path: '/exportComments',
+    name: 'ExportComments',
+    component: ExportComments
+  },
+  {
+    path: '/shareWordLink/:wordLink',
+    name: 'ShareWordLink',
+    component: ShareWordLink
   },
 ]
 

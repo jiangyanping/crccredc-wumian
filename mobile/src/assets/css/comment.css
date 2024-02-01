@@ -230,7 +230,8 @@
 }
 
 .com-delete,
-.com-change {
+.com-change,
+.com-export {
   float: right;
   width: .68rem;
   height: .64rem!important;
@@ -246,8 +247,12 @@
     width: .54rem;
     padding-right:0;
 }
+.com-export{
+  width: .58rem;
+}
 .com-delete svg,
-.com-change svg{
+.com-change svg,
+.com-export svg{
     width: 100%;
     height: 100%;
 }
