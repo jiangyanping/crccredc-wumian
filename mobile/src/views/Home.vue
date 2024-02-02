@@ -150,7 +150,7 @@ export default {
             let urlHasKey = location.href.indexOf('key') > -1 && location.href.length > 1 ? location.href.split("key")[1] : "";
             if (urlHasKey) {
                 key = urlHasKey.split("#")[0].slice(1);
-                sessionStorage.setItem('weixinkey', key);
+                localStorage.setItem('weixinkey', key);
                 window.location.href = location.href.split("?")[0];  //微信登录回来，地址中key，要存储key并且改变地址，去掉key
             }
             return key;
@@ -160,8 +160,8 @@ export default {
          */
         getWeixinKey(route) {
             let key = '';
-            if (sessionStorage.getItem('weixinkey')) {
-                key = sessionStorage.getItem('weixinkey');
+            if (localStorage.getItem('weixinkey')) {
+                key = localStorage.getItem('weixinkey');
                 console.log(key);
             } else {
                 key = this.handleKey();

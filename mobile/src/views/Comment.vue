@@ -341,7 +341,7 @@ export default {
          */
         weixinislogin() {
             let vm = this;
-            let key = sessionStorage.getItem('weixinkey');
+            let key = localStorage.getItem('weixinkey');
             if (key) {
                 API.weixinislogin({ key: key }).then(result => {
                     if (result.data.code == 0 && result.data.data.realName) {
@@ -351,7 +351,7 @@ export default {
                     }
                 });
             } else {
-                this.$router.push('/home');  //评论页分享出去，如果sessionStorage里有key，则请求用户登录信息，否则跳转至home页。
+                this.$router.push('/home');  //评论页分享出去，如果localStorage里有key，则请求用户登录信息，否则跳转至home页。
             }
         },
 
@@ -454,7 +454,7 @@ export default {
         handleExportComments(item){
             let vm= this;
             vm.shareWord = true;
-            let key = sessionStorage.getItem('weixinkey');
+            let key = localStorage.getItem('weixinkey');
             if (key) {
                 API.exportComments({ cIDs: item.id, key: key }).then(result => {
                     if (result.data.code == 0) {
@@ -469,7 +469,7 @@ export default {
                     }
                 });
             } else {
-                this.$router.push('/home');  //评论页分享出去，如果sessionStorage里有key，则请求用户登录信息，否则跳转至home页。
+                this.$router.push('/home');  //评论页分享出去，如果localStorage里有key，则请求用户登录信息，否则跳转至home页。
             }
         },
 

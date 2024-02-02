@@ -163,7 +163,7 @@ export default {
             //TODO 为了本地演示所以调整开始
             var qid1 = '';
             var hrefStr = location.href.indexOf('?') > -1 && location.href.length > 1 ? location.href.split("?")[1] : 1;
-            if (hrefStr.indexOf('openid') > -1 || hrefStr.indexOf('username') > -1) { //需要微信登录时，登陆完回调地址会变化,可能是openid="333243245",也可能是username=??，这时用sessionStorage.qid
+            if (hrefStr.indexOf('openid') > -1 || hrefStr.indexOf('username') > -1) { //需要微信登录时，登陆完回调地址会变化,可能是openid="333243245",也可能是username=??，这时用localStorage.qid
                 qid1 = hrefStr.substring(4, hrefStr.lastIndexOf("&"));
             } else {
                 //qid1 = hrefStr.substr(4, hrefStr.length);

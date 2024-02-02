@@ -110,18 +110,6 @@
                     @click="handleExportComments">确认导出并分享</v-btn>
             </v-col>
         </v-row>
-        <div class="j-realName" v-show="popupRealName">
-            <div class="mask-inpField" v-show="popupRealName" @click.prevent="popupRealName = !popupRealName"></div>
-            <v-row justify="space-between" class="j-realName-inp mx-4">
-                <v-col cols="12">
-                    <v-form ref="form">
-                        <v-text-field v-model="realNameObj.realName" label="真实姓名：" required></v-text-field>
-                        <v-btn class="j-realName-btn pa-2 mt-1" color="primary"
-                            @click.prevent="handleAddRealName">确定</v-btn>
-                    </v-form>
-                </v-col>
-            </v-row>
-        </div>
         <div @click.stop="handleGoBack" class="goBack">
             <svg t="1704783045457" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
                 p-id="1291" width="64" height="64">
@@ -309,7 +297,7 @@ export default {
          */
         weixinislogin() {
             let vm = this;
-            let key = sessionStorage.getItem('weixinkey');
+            let key = localStorage.getItem('weixinkey');
             if (key) {
                 API.weixinislogin({ key: key }).then(result => {
                     if (result.data.code == 0 && result.data.data.realName) {
@@ -317,7 +305,7 @@ export default {
                     }
                 });
             } else {
-                this.$router.push('/home');  //评论页分享出去，如果sessionStorage里有key，则请求用户登录信息，否则跳转至home页。
+                this.$router.push('/home');  //评论页分享出去，如果localStorage里有key，则请求用户登录信息，否则跳转至home页。
             }
         },
 
@@ -470,7 +458,7 @@ export default {
         handleExportComments() {
             let vm = this;
             vm.shareWord = true;
-            let key = sessionStorage.getItem('weixinkey');
+            let key = localStorage.getItem('weixinkey');
             let str = vm.selectedComments.join(','); //'6dcd20f4f4904bc2b8baf2fbb7e197c5'
             if (key) {
                 API.exportComments({ cIDs: str, key: key }).then(result => {
@@ -486,7 +474,7 @@ export default {
                     }
                 });
             } else {
-                this.$router.push('/home');  //评论页分享出去，如果sessionStorage里有key，则请求用户登录信息，否则跳转至home页。
+                this.$router.push('/home');  //评论页分享出去，如果localStorage里有key，则请求用户登录信息，否则跳转至home页。
             }
         },
 
