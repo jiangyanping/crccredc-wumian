@@ -309,7 +309,10 @@ export default {
             API.weixinislogin({ key: key }).then(res => {
                 console.log(res.data);
                 if (res.data.code == 0 && !res.data.data.openId && !res.data.data.userName) {
-                    let url = API.baseURL + '/weixinlogin?key=' + res.data.data.key + '&router=' + window.location.href.split("#")[1];
+                    //线下
+                    //let url = API.baseURL + '/weixinlogin?key=' + res.data.data.key + '&router=' + window.location.href.split("#")[1];
+                    //线上
+                    let url = API.baseURL + '/weixinlogin?key=' + res.data.data.key + '&router=' + '/01_huacao/1/index.html@'  + window.location.href.split("#")[1];
                     window.location.href = url;
                 } else {
                     //已登录

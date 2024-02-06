@@ -26,6 +26,10 @@ body {
     width: 100%;
     height: 100%;
 }
+.v-application .accent {
+    background-color: #0066CC !important;
+    border-color: #0066CC !important;
+}
 </style>
 <script>
 export default {

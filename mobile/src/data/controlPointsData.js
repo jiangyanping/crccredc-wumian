@@ -103,13 +103,6 @@ export default [
             commentNumTotal : 0,
             commentNumUnconfirmed : 0,
         },
-        {
-            controlPointSort: '15',
-            controlPoint: '15其他',
-            mustBeChecked: false,
-            commentNumTotal : 0,
-            commentNumUnconfirmed : 0,
-        },
     ]
 },
 {
@@ -212,13 +205,6 @@ export default [
         {
             controlPointSort: '14',
             controlPoint: '14设备基础',
-            mustBeChecked: false,
-            commentNumTotal : 0,
-            commentNumUnconfirmed : 0,
-        },
-        {
-            controlPointSort: '15',
-            controlPoint: '15其他',
             mustBeChecked: false,
             commentNumTotal : 0,
             commentNumUnconfirmed : 0,
@@ -329,13 +315,6 @@ export default [
             commentNumTotal : 0,
             commentNumUnconfirmed : 0,
         },
-        {
-            controlPointSort: '15',
-            controlPoint: '15其他',
-            mustBeChecked: false,
-            commentNumTotal : 0,
-            commentNumUnconfirmed : 0,
-        },
     ]
 },
 {
@@ -438,13 +417,6 @@ export default [
         {
             controlPointSort: '14',
             controlPoint: '14设备基础',
-            mustBeChecked: true,
-            commentNumTotal : 0,
-            commentNumUnconfirmed : 0,
-        },
-        {
-            controlPointSort: '15',
-            controlPoint: '15其他',
             mustBeChecked: true,
             commentNumTotal : 0,
             commentNumUnconfirmed : 0,

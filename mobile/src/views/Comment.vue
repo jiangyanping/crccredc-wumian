@@ -6,13 +6,13 @@
             </div>
         </div>
         <div class="popup popup-com">
-            <div class="com-popup-con">
-                <div class="com-popup-box">
+            <div class="com-popup-con" :class="!showComPopupPost ? 'com-popup-con2' : ''">
+                <div class="com-popup-box" :class="!showComPopupPost ? 'com-popup-box2' : ''">
                     <div class="com-list" v-if="commentsData.length != 0">
                         <!-- let listArr = [
                             {
                                 'controlSort': 'constructural',
-
+                                'controlName': '结构层',
                                                                 'controlPointSortArr':[
                                                                     {
                                                                         'controlPointSort':'02',
@@ -63,7 +63,8 @@
                                                     </svg>
                                                 </span>
                                                 <!-- <span class="com-infor-btn com-export" @click.stop="handleExportComments(item)"> -->
-                                                <span class="com-infor-btn com-export" @click.stop="handleExportComments(item)">
+                                                <span class="com-infor-btn com-export"
+                                                    @click.stop="handleExportComments(item)">
                                                     <svg t="1706609498549" class="icon" viewBox="0 0 1024 1024"
                                                         version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1444"
                                                         width="64" height="64">
@@ -135,7 +136,8 @@
                                                                 </span>
                                                                 <!-- <span class="com-infor-btn com-export"
                                                                     @click.stop="handleExportComments(o)"> -->
-                                                                <span class="com-infor-btn com-export" @click.stop="handleExportComments(o)"> 
+                                                                <span class="com-infor-btn com-export"
+                                                                    @click.stop="handleExportComments(o)">
                                                                     <svg t="1706609498549" class="icon"
                                                                         viewBox="0 0 1024 1024" version="1.1"
                                                                         xmlns="http://www.w3.org/2000/svg" p-id="1444"
@@ -184,7 +186,7 @@
                     </div>
                     <div class="noComments" v-else><span>待发布问题或记录！</span></div>
                 </div>
-                <div class="com-popup-post">
+                <div class="com-popup-post" v-show="showComPopupPost">
                     <div class="com-popup-inputWrap" @click.stop.prevent="clickInp">点击这里发布新的问题或现场记录
                         <!-- <input @click.stop.prevent="clickInp" type="text" class="com-popup-input" name=""
                             placeholder="点击这里发布新的问题或现场记录"> -->
@@ -263,6 +265,7 @@ export default {
         return {
             popupInpField: false,  //新增评论弹窗
             changePopUpInpField: false,   //修改评论弹窗
+            showComPopupPost: true, //home页的四个分层管控进到评论，只是查看，不能发表
 
             commentsData: [],  //当前要显示的数据
             dealCommentsData: [],  //后台请求回的数据，经过处理的
@@ -272,6 +275,22 @@ export default {
                 show: false,
                 src: '',
             },
+
+            controlArr: [
+                {
+                    controlSort: 'constructural',
+                    controlName: '防水层'
+                }, {
+                    controlSort: 'conwaterproofbase',
+                    controlName: '防水基层'
+                }, {
+                    controlSort: 'conwaterproof',
+                    controlName: '防水层'
+                }, {
+                    controlSort: 'consurface',
+                    controlName: '面层'
+                }
+            ],
 
             controlPointArr: [
                 { controlPointSort: '00', controlPoint: '' }, { controlPointSort: '01', controlPoint: '01平屋面通用做法' },
@@ -294,11 +313,12 @@ export default {
                 proid: '08fa9423-a2d5-48a9-aa44-1d97f10e8ae9',  //项目id，目前是写死的，uuid生成的
                 qid: '139c1014-43b3-4f0c-81e5-6395acb3e127',  //二维码id，目前也是写死的，uuid生成的
 
-                controlSort: "",  //当前分布管控分类
-                controlPointSort: "",  //当前管控点分类
-                controlPoint: "",
-                comSort: "",
-                comState: ""
+                controlSort: "",  //当前分布管控分类，constructural，conwaterproofbase，conwaterproof，consurface
+                controlName: '',  //管控分类名称，防水层，防水基层，防水层，面层
+                controlPointSort: "",  //当前管控点分类,01，02，03等
+                controlPoint: "",   //当前管控点分类名称, 01平屋面通用做法，02女儿墙等
+                comSort: "",   //评论的类型，问题是problem，现场记录是record
+                comState: ""    //评论状态，已修改是已，未修改是待
             },
             comChangeParams: {  //只写必要的修改参数
                 key: '',
@@ -317,20 +337,29 @@ export default {
             nonceStr: 'Wm3WZYTPz0wzccnW',
             signature: '',
 
-            shareTitle: '标题',  //分享标题
+            shareTitle: '屋面工程整改单',  //分享标题
             shareDesc: '描述',   //分享描述
             shareLink: '',   //分享链接
-            shareImgUrl: 'http://conmanage.rebim.cn/A-others/images/one.png',   //分享图标
+            shareImgUrl: 'http://conmanage.rebim.cn/A-others/images/one.jpg',   //分享图标
         };
 
     },
     mounted() {
         this.comParams.controlSort = this.$route.params.controlSort;
         this.comParams.controlPointSort = this.$route.params.controlPointSort;
-        for (let i = 0; i < this.controlPointArr.length; i++) {
-            if (this.controlPointArr[i].controlPointSort == this.comParams.controlPointSort) {
-                this.comParams.controlPoint = this.controlPointArr[i].controlPoint;
+        for (let i = 0; i < this.controlArr.length; i++) {
+            if (this.controlArr[i].controlSort == this.comParams.controlSort) {
+                this.comParams.controlName = this.controlArr[i].controlName;
             }
+        }
+        for (let j = 0; j < this.controlPointArr.length; j++) {
+            if (this.controlPointArr[j].controlPointSort == this.comParams.controlPointSort) {
+                this.comParams.controlPoint = this.controlPointArr[j].controlPoint;
+            }
+        }
+
+        if (this.$route.params.controlPointSort == '00') {
+            this.showComPopupPost = false
         }
 
         this.weixinislogin();
@@ -347,6 +376,11 @@ export default {
                     if (result.data.code == 0 && result.data.data.realName) {
                         vm.comParams.key = result.data.data.key;
                         vm.comParams.createby = result.data.data.realName;
+                        let date = new Date();
+                        let year = date.getFullYear();
+                        let month = (date.getMonth() + 1).toString().padStart(2, '0');
+                        let day = date.getDate().toString().padStart(2, '0');
+                        vm.shareDesc = '华漕1#楼-' + year + '/' + month + '/' + day + '-' + result.data.data.realName + '导出';
                         vm.handleQueryComs();
                     }
                 });
@@ -451,12 +485,12 @@ export default {
         /**
          * 导出评论
          */
-        handleExportComments(item){
-            let vm= this;
+        handleExportComments(item) {
+            let vm = this;
             vm.shareWord = true;
             let key = localStorage.getItem('weixinkey');
             if (key) {
-                API.exportComments({ cIDs: item.id, key: key }).then(result => {
+                API.exportComments({ cIDs: item.id, key: key, louNum: '1' }).then(result => {
                     if (result.data.code == 0) {
                         vm.shareLink = result.data.data;
                         console.log(vm.shareLink);
@@ -476,7 +510,7 @@ export default {
         /**
          * 获取签名
          */
-         getSignature() {
+        getSignature() {
             API.getSignature().then(result => {
                 if (result.data.code == 0) {
                     this.signature = 'jsapi_ticket=' + result.data.data + '&noncestr=' + this.nonceStr + '&timestamp=' + this.timestamp + '&url=' + this.url;
@@ -503,6 +537,7 @@ export default {
             // 微信JS-SDK初始化成功后的回调
             wx.ready(() => {
                 console.log('微信JS-SDK初始化成功');
+                console.log(this.shareDesc)
                 wx.updateAppMessageShareData({
                     title: this.shareTitle,
                     desc: this.shareDesc,
@@ -828,6 +863,7 @@ export default {
             // let listArr = [
             //     {
             //         'controlSort': 'constructural',
+            //         'controlName': '结构层',
             //         'controlPointSortArr':[
             //             {
             //                 'controlPointSort':'02',
@@ -879,6 +915,7 @@ export default {
                 // 第一次对比没有参照，放入参照
                 listArr.push({
                     controlSort: el.controlSort,
+                    controlName: el.controlName,
                     controlPointSortArr: [
                         {
                             controlPointSort: el.controlPointSort,
@@ -928,7 +965,7 @@ export default {
                 }
             }
         },
-        //处理数据,将返回数据根据某个属性进行分组
+        //增加评论
         addDataDeal: function (d) {
             let vm = this;
             let listArr = vm.dealCommentsData;
@@ -969,6 +1006,7 @@ export default {
                 // 第一次对比没有参照，放入参照
                 listArr.push({
                     controlSort: el.controlSort,
+                    controlName: el.controlName,
                     controlPointSortArr: [
                         {
                             controlPointSort: el.controlPointSort,
@@ -1028,6 +1066,7 @@ export default {
     float: right;
     color: #000;
 }
+
 /* 分享遮罩-shart */
 .mask-shareWord {
     position: fixed;
@@ -1046,7 +1085,17 @@ export default {
     padding: 10px 15px;
     float: right;
 }
+
 /* 分享遮罩-end */
+
+.com-popup-con2 {
+    height: 100%;
+    border-bottom: 1px solid #dfdfdf
+}
+
+.com-popup-box2 {
+    height: 100%;
+}
 </style>
 <style>
 .goBack {

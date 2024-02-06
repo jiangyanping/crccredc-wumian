@@ -6,103 +6,72 @@
             </div>
         </div>
         <!-- <p>{{ selectedComments }}</p> -->
-        <p style="text-align: left;margin-left: 50px;margin-bottom: 0;line-height: 48px;">请选择要导出的评论 <span
-                style="float:right;margin-right:.28rem;">已选择数: {{ selectedComments.length }}</span></p>
-        <div class="commentsTree">
-            <div>
-                <v-expansion-panels multiple class="commentsTreePanel">
-                    <v-expansion-panel v-for="(item, index) in dealCommentsData" :key="index">
-                        <v-expansion-panel-header>
-                            <v-checkbox :indeterminate="item.indeterminate" @change="updateChecked(item)" @click.stop
-                                v-model="item.controlChecked" :value="item.controlChecked"></v-checkbox>{{
-                                    item.controlName }}
-                        </v-expansion-panel-header>
-                        <v-expansion-panel-content class="controlPointSort-wrap">
-                            <v-expansion-panel v-for="(it, i) in item.controlPointSortArr" :key="i">
-                                <v-expansion-panel-header>
-                                    <v-checkbox :indeterminate="it.indeterminate" @change="updateChecked(it, item)"
-                                        @click.stop v-model="it.controlPointChecked"
-                                        :value="it.controlPointChecked"></v-checkbox>{{
-                                            it.controlPoint }}
-                                </v-expansion-panel-header>
-                                <v-expansion-panel-content class="comments-wrap">
-                                    <v-expansion-panel v-for="(obj, j) in commentsDataF(it.comments)" :key="j">
-                                        <v-expansion-panel-header>
-                                            <v-checkbox @change="updateChecked(obj, it, item)" @click.stop
-                                                v-model="obj.commentChecked" :value="obj.commentChecked"></v-checkbox>
-                                            <div class="comments-fatherContent">
-                                                <div class="com-li-title">
-                                                    <div class="com-li-title-name">提出人：{{ obj.createby }}</div>
-                                                    <div class="com-li-title-state">Q{{ j + 1 }} {{ obj.comState }}整改
-                                                    </div>
-                                                </div>
-                                                <div class="com-infor-wrap">
-                                                    <div class="com-a com-infor-con">
-                                                        <div class="com-text">{{ obj.text }}</div>
-                                                        <div class="com-imgs" v-if="obj.img"><img class="com-imgs-li"
-                                                                :src="(obj.img)" @click.stop="clickImg($event)" />
-                                                        </div>
-                                                        <div class="com-infor">
-                                                            <span class="com-infor-date">{{ obj.createat }}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </v-expansion-panel-header>
-                                        <v-expansion-panel-content>
-                                            <div class="com-list" v-if="hasChild(it, obj)">
-                                                <div class="com-li clearfix">
-                                                    <div class="com-infor-wrap">
-                                                        <div class="com-child">
-                                                            <div class="com-child-list">
-                                                                <div class="com-child-li clearfix"
-                                                                    v-for="o in commentsDataC(it.comments, obj)"
-                                                                    :key="o.id">
-                                                                    <div class="com-child-inforwrap">
-                                                                        <div class="com-a com-child-inforcon">
-                                                                            <div class="com-top">
-                                                                                <span class="com-username">{{
-                                                                                    o.createby }}<span
-                                                                                        style="color:#999999">&nbsp;回复&nbsp;</span>{{
-                                                                                            o.comToName }}
-                                                                                </span>
-                                                                            </div>
-                                                                            <div class="com-text">{{ o.text }}</div>
-                                                                            <div class="com-imgs" v-if="o.img">
-                                                                                <img class="com-imgs-li" :src="(o.img)"
-                                                                                    @click.stop="clickImg($event)" />
-                                                                            </div>
-                                                                            <div class="com-infor">
-                                                                                <span class="com-infor-date">{{
-                                                                                    o.createat }}</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div v-else>暂无回复</div>
-                                        </v-expansion-panel-content>
-                                    </v-expansion-panel>
-                                </v-expansion-panel-content>
-                            </v-expansion-panel>
-                        </v-expansion-panel-content>
-                    </v-expansion-panel>
-                </v-expansion-panels>
-            </div>
-            <!-- <div v-for="(item, index) in dealCommentsData" :key="index">
-                <v-checkbox v-model="selectedComments" :label="item.controlName" :value="item.controlName"></v-checkbox>
-                <div v-for="(it, i) in item.controlPointSortArr" :key="i">
-                    <v-checkbox v-model="selectedComments" :label="it.controlPoint" :value="it.controlPoint"></v-checkbox>
-                    <div v-for="(obj, j) in it.comments" :key="j">
-                        <v-checkbox v-model="selectedComments" :label="obj.text" :value="obj.text"></v-checkbox>
+        <p style="text-align: left;margin-left: 50px;margin-bottom: 0;line-height: 40px;">请选择要导出的评论 <span
+                style="float:right;margin-right:.3rem;font-size: .28rem;">已选择数: {{ selectedComments.length }}</span></p>
+        <div class="j-date">
+            <v-row>
+                <v-col cols="9" sm="6" md="4">
+                    <v-menu ref="menu" v-model="menu" :close-on-content-click="false" :nudge-right="40"
+                        transition="scale-transition" offset-y min-width="auto">
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-text-field v-model="date" placeholder="请选择删选日期" prepend-icon="mdi-calendar" readonly
+                                v-bind="attrs" v-on="on"></v-text-field>
+                        </template>
+                        <v-date-picker v-model="date" :allowed-dates="allowedDates" :events="functionEvents" event-color="primary lighten-1" no-title
+                            :show-current="false" @input="menu = false" locale="zh-cn"></v-date-picker>
+                    </v-menu>
+                </v-col>
+                <!-- <v-col cols="2" class="j-clear-date">
+                    <span @click="handleSelectClear">
+                        <svg t="1707028626783" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                            xmlns="http://www.w3.org/2000/svg" p-id="1474" width="64" height="64">
+                            <path
+                                d="M576 512l277.333333 277.333333-64 64-277.333333-277.333333L234.666667 853.333333 170.666667 789.333333l277.333333-277.333333L170.666667 234.666667 234.666667 170.666667l277.333333 277.333333L789.333333 170.666667 853.333333 234.666667 576 512z"
+                                fill="#666666" p-id="1475"></path>
+
+                        </svg>
+                    </span>
+                </v-col> -->
+                <v-col cols="3" style="margin-top: -4px;">
+                    <!-- <v-btn small class="text-no-wrap rounded-pill j-sure-date" outlined color="primary"
+                        @click="handleSelectDateSure">确定</v-btn> -->
+                    <v-btn small class="text-no-wrap rounded-pill j-clear-date" outlined color="primary"
+                        @click="handleSelectClear">清空</v-btn>
+                </v-col>
+            </v-row>
+        </div>
+        <div class="comments">
+            <div class="com-list" v-if="allCommentsData.length != 0">
+                <div v-if="curentCommentsData.length != 0">
+                    <div class="com-li clearfix" v-for="(item, index) in curentCommentsData" :key="index">
+                        <div class="com-li-title">
+                            <div class="com-li-title-name">提出人：{{ item.createby }}</div>
+                            <div class="com-li-title-state">Q{{ curentCommentsData.length - index }} {{ item.comState }}整改
+                            </div>
+                        </div>
+                        <template>
+                            <div class="com-infor-wrap">
+                                <div class="com-a com-infor-con">
+                                    <div class="com-top">
+                                        <v-checkbox class="com-checkBox" v-model="selectedComments"
+                                            :value="item.id"></v-checkbox>
+                                    </div>
+                                    <div class="com-text">{{ item.text }}</div>
+                                    <div class="com-imgs" v-if="item.img"><img class="com-imgs-li" :src="(item.img)"
+                                            @click.stop="clickImg($event)" />
+                                    </div>
+                                    <div class="com-infor">
+                                        <span class="com-infor-from">{{ item.controlName }} > {{ item.controlPoint }}</span>
+                                        <span class="com-infor-date">{{ item.createat }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                 </div>
-            </div> -->
-
+                <div class="noComments" v-else><span>暂无评论</span></div>
+            </div>
+            <div class="noComments" v-else><span>暂无评论</span></div>
         </div>
         <v-row class="text-center j-export-comments" justify="center">
             <v-col cols="12">
@@ -129,8 +98,13 @@ export default {
     name: 'ExportComments',
     data: function () {
         return {
+            //日期控件
+            date: '',
+            menu: false,
+
             proid: '08fa9423-a2d5-48a9-aa44-1d97f10e8ae9',
-            dealCommentsData: [],  //后台请求回的评论数据，经过处理的
+            allCommentsData: [],  //后台请求回的评论数据，经过处理的,所有pid为0的
+            curentCommentsData: [],  //当前显示的评论
 
             popupRealName: false,
             realNameObj: {
@@ -140,6 +114,7 @@ export default {
             },
             selectedComments: [],
 
+
             //分享
             shareWord: false,
             url: '',
@@ -148,150 +123,39 @@ export default {
             nonceStr: 'Wm3WZYTPz0wzccnW',
             signature: '',
 
-            shareTitle: '标题',  //分享标题
+            shareTitle: '屋面工程整改单',  //分享标题
             shareDesc: '描述',   //分享描述
             shareLink: '',   //分享链接
-            shareImgUrl: 'http://conmanage.rebim.cn/A-others/images/one.png',   //分享图标
+            shareImgUrl: 'http://conmanage.rebim.cn/A-others/images/one.jpg',   //分享图标
         };
     },
     watch: {
+        date: {
+            handler(newVal) {
+                this.handleSelectDateSure(newVal);
+            },
+            immediate: true, //首次绑定的时候，是否执行 handler
+        },
     },
+
     mounted() {
         this.weixinislogin();
         document.title = '导出评论';
     },
     methods: {
-        /**
-         * 点击复选框，数据更新了，但是监听不到，所以手动整体修改this.dealCommentsData = [...this.dealCommentsData];，触发v-model
-         */
-        updateChecked(self, parent, grandParent) {
+        allowedDates(date) {
             let vm = this;
-
-            //点击管控步骤
-            if (self.controlChecked !== undefined) {
-                if (self.controlChecked) {
-                    for (let it of self.controlPointSortArr) {
-                        it.controlPointChecked = true;
-                        for (let obj of it.comments) {
-                            if (obj.pid == '0') {
-                                obj.commentChecked = true;
-                                vm.selectedComments.push(obj.id);
-                            }
-                        }
-                    }
-                } else {
-                    self.controlChecked = false;
-                    for (let it of self.controlPointSortArr) {
-                        it.controlPointChecked = false;
-                        for (let obj of it.comments) {
-                            obj.commentChecked = false;
-                            vm.selectedComments = vm.selectedComments.filter(id => id !== obj.id);
-                        }
-                    }
+            function allowed(vm) {
+                for (let item of vm.allCommentsData) {
+                    if(item.createat.slice(0, 10) == date) return true;
                 }
             }
-
-            //点击管控节点
-            if (self.controlPointChecked !== undefined) {
-                if (self.controlPointChecked) {
-                    for (let obj of self.comments) {
-                        if (obj.pid == '0') {
-                            obj.commentChecked = true;
-                            vm.selectedComments.push(obj.id);
-                        }
-                    }
-
-                    //父级可能是半选中，可能是未选中分情况
-                    const someChecked = parent.controlPointSortArr.some((it) => it.controlPointChecked);
-                    const allChecked = parent.controlPointSortArr.every((it) => it.controlPointChecked);
-
-                    if (someChecked && !allChecked) {
-                        parent.indeterminate = true;
-                    } else {
-                        parent.indeterminate = false;
-                        parent.controlChecked = true;
-                    }
-                } else {
-                    self.controlPointChecked = false;
-                    for (let obj of self.comments) {
-                        obj.commentChecked = false;
-                        vm.selectedComments = vm.selectedComments.filter(id => id !== obj.id);
-                    }
-
-                    //父级可能是半选中，可能是未选中分情况
-                    const someChecked = parent.controlPointSortArr.some((it) => it.controlPointChecked);
-                    const allChecked = parent.controlPointSortArr.every((it) => it.controlPointChecked);
-
-                    if (someChecked && !allChecked) {
-                        parent.indeterminate = true;
-                    } else {
-                        parent.indeterminate = false;
-                        parent.controlChecked = false;
-                    }
-                }
-            }
-
-            //点击评论
-            if (self.commentChecked !== undefined) {
-                if (self.commentChecked) {
-                    let obj = self;
-                    if (obj.pid == '0') {
-                        obj.commentChecked = true;
-                        vm.selectedComments.push(obj.id);
-                    }
-
-                    //父级可能是半选中，可能是未选中分情况
-                    let someParentChecked = parent.comments.some((obj) => obj.commentChecked);
-                    let allParentChecked = parent.comments.every((obj) => obj.commentChecked);
-
-                    if (someParentChecked && !allParentChecked) {
-                        parent.indeterminate = true;
-                        grandParent.indeterminate = true;
-                    } else if (allParentChecked) {
-                        parent.indeterminate = false;
-                        parent.controlPointChecked = true;
-                        let someGrandChecked = grandParent.controlPointSortArr.some((it) => it.controlPointChecked);
-                        let allGrandChecked = grandParent.controlPointSortArr.every((it) => it.controlPointChecked);
-                        if (someGrandChecked && !allGrandChecked) {
-                            grandParent.indeterminate = true;
-                        } else {
-                            grandParent.indeterminate = false;
-                            grandParent.controlChecked = true
-                        }
-                    }
-
-                } else {
-                    let obj = self;
-                    obj.commentChecked = false;
-                    vm.selectedComments = vm.selectedComments.filter(id => id !== obj.id);
-
-                    //父级可能是半选中，可能是未选中分情况
-                    let someParentChecked1 = parent.comments.some((obj) => obj.commentChecked);
-                    let allParentChecked1 = parent.comments.every((obj) => obj.commentChecked);
-
-                    if (someParentChecked1 && !allParentChecked1) {
-                        parent.indeterminate = true;
-                        grandParent.indeterminate = true;
-                    } else if (!someParentChecked1) {
-                        parent.indeterminate = false;
-                        parent.controlPointChecked = false;
-                        let someGrandChecked1 = grandParent.controlPointSortArr.some((it) => it.controlPointChecked);
-                        let allGrandChecked1 = grandParent.controlPointSortArr.every((it) => it.controlPointChecked);
-                        if (someGrandChecked1 && !allGrandChecked1) {
-                            grandParent.indeterminate = true;
-                        } else {
-                            grandParent.indeterminate = false;
-                            grandParent.controlChecked = false;
-                        }
-                    }
-                }
-            }
-
-            this.dealCommentsData = [...this.dealCommentsData];
-            console.log(this.dealCommentsData);
-            console.log(vm.selectedComments);
+            return allowed(vm);
         },
 
+        functionEvents(date) {
+            this.allowedDates(date);
+        },
         /**
          * 微信是否登录，获取用户信息
          */
@@ -301,6 +165,11 @@ export default {
             if (key) {
                 API.weixinislogin({ key: key }).then(result => {
                     if (result.data.code == 0 && result.data.data.realName) {
+                        let date = new Date();
+                        let year = date.getFullYear();
+                        let month = (date.getMonth() + 1).toString().padStart(2, '0');
+                        let day = date.getDate().toString().padStart(2, '0');
+                        vm.shareDesc = '华漕1#楼-' + year + '/' + month + '/' + day + '-' + result.data.data.realName + '导出';
                         vm.handleQueryComs(); //查询评论，处理，获取评论数量信息
                     }
                 });
@@ -317,132 +186,46 @@ export default {
             //API.getComments({ proid: this.comParams.proid, key: this.comParams.key }).then(res => {
             API.getComments({ proid: this.proid }).then(res => {
                 if (Number(res.data.code) === 0) {
-                    this.attrsDataDeal(res.data.data);
-                    for (let item of vm.dealCommentsData) {
-                        if (item.controlSort == 'constructural') item.controlName = '结构层';
-                        if (item.controlSort == 'conwaterproofbase') item.controlName = '防水基层';
-                        if (item.controlSort == 'conwaterproof') item.controlName = '防水层';
-                        if (item.controlSort == 'consurface') item.controlName = '面层';
-                        item.controlChecked = false;
-                        item.indeterminate = false;
-                        for (let it of item.controlPointSortArr) {
-                            it.controlPointChecked = false;
-                            it.indeterminate = false;
-                            for (let obj of it.comments) {
-                                obj.commentChecked = false;
-                            }
-                        }
-                    }
+                    let d = res.data.data;
+                    //选择pid为0,并且按时间顺序，正序排序的评论
+                    d.forEach((item) => {
+                        item.dueTime = Date.parse(item.createat);
+                    });
+                    d.sort(function (a, b) {
+                        return b.dueTime - a.dueTime;
+                    });
+                    //截取评论时间，去掉秒
+                    d.forEach((item) => {
+                        item.createat = item.createat.slice(0, 16);
+                        item.checked = false;
+                    });
+
+                    vm.allCommentsData = d.filter(item => item.pid == '0');
+                    vm.curentCommentsData = [...vm.allCommentsData];
                 }
             });
-
         },
 
-        //处理评论数据,将返回数据根据某个属性进行分组
-        attrsDataDeal: function (d) {
-            let vm = this;
-            //依据时间对评论排序
-            d.forEach((item) => {
-                item.dueTime = Date.parse(item.createat);
-            });
-            d.sort(function (a, b) {
-                return a.dueTime - b.dueTime;
-            });
-            //截取评论时间，去掉秒
-            d.forEach((item) => {
-                item.createat = item.createat.slice(0, 16);
-            });
-            this.commentsData = [];
-            // let listArr = [
-            //     {
-            //         'controlSort': 'constructural',
-            //         'controlPointSortArr':[
-            //             {
-            //                 'controlPointSort':'02',
-            //                 'controlPoint':'02女儿墙',
-            //                 'comments':[
-            //                     {    
-            //                          commentChecked:false,
-            //                         //具体评论条目
-            //                     }
-            //                 ],
-            //                'commentNumTotal':1,  //总共的问题数量
-            //                'commentNumUnconfirmed':1, //未整改确认的问题数量
-            //                'controlChecked':false
-            //             }
-            //         ],
-            //         'controlComNumTotal':1,  //该管控节点下总共的问题数量
-            //         'controlComNumUnconfirmed':1,  //该管控节点下未整改确认的问题数量
-            //         'controlChecked':false
-            //     }
-            // ];
-
-            let listArr = [];
-            d.forEach(function (el) {
-                vm.$set(el, "active", false);
-                el.createat = el.createat.slice(0, 16);
-                for (let i = 0; i < listArr.length; i++) {
-                    // 对比相同的字段key，相同放入对应的数组
-                    if (listArr[i].controlSort == el.controlSort) {
-                        let controlPointSortArr = listArr[i].controlPointSortArr;
-                        const res = controlPointSortArr.find(item => item.controlPointSort === el.controlPointSort);
-                        if (res) {
-                            for (let j = 0; j < controlPointSortArr.length; j++) {
-                                if (controlPointSortArr[j].controlPointSort == el.controlPointSort) {
-                                    controlPointSortArr[j].comments.push(el);
-                                    return;
-                                }
-                            }
-                        } else {
-                            controlPointSortArr.push(
-                                {
-                                    controlPointSort: el.controlPointSort,
-                                    controlPoint: el.controlPoint,
-                                    comments: [
-                                        el
-                                    ]
-                                }
-                            )
-                            return;
-                        }
-                    }
-                }
-                // 第一次对比没有参照，放入参照
-                listArr.push({
-                    controlSort: el.controlSort,
-                    controlPointSortArr: [
-                        {
-                            controlPointSort: el.controlPointSort,
-                            controlPoint: el.controlPoint,
-                            comments: [
-                                el
-                            ]
-                        }
-                    ]
-                });
-            });
-
-            //处理数据，加评论总数和待整改的评论数量属性,总数取pid为0的
-            for (let n = 0; n < listArr.length; n++) {
-                let controlPointSortArr = listArr[n].controlPointSortArr;
-                listArr[n].controlComNumTotal = 0;
-                listArr[n].controlComNumUnconfirmed = 0;
-                //按照管控节点的01,02,03正序排序
-                controlPointSortArr.sort(function (a, b) {
-                    return a.controlPointSort - b.controlPointSort;
-                });
-                for (let m = 0; m < controlPointSortArr.length; m++) {
-                    //统计该管控步骤节点下的的总共的问题数量和未整改确认的问题数量
-                    controlPointSortArr[m].controlPoint = controlPointSortArr[m].comments[0].controlPoint;
-                    controlPointSortArr[m].commentNumTotal = controlPointSortArr[m].comments.filter(item => item.pid == 0).length;
-                    controlPointSortArr[m].commentNumUnconfirmed = controlPointSortArr[m].comments.filter(item => item.comState == '待' && item.pid == 0).length;
-                    //统计该管控步骤下的总共的问题数量和未整改确认的问题数量
-                    listArr[n].controlComNumTotal += controlPointSortArr[m].commentNumTotal;
-                    listArr[n].controlComNumUnconfirmed += controlPointSortArr[m].commentNumUnconfirmed;
-                }
+        /**
+         * 选择日期
+         */
+        handleSelectDateSure(date) {
+            let arr = [];
+            if (date != '') {
+                arr = this.allCommentsData.filter(item => item.createat.slice(0, 10) == date);
+            } else {
+                arr = this.allCommentsData;
             }
-            //处理好的数据给dealCommentsData赋值
-            vm.dealCommentsData = listArr;
+            this.selectedComments = [];
+            this.curentCommentsData = [...arr];
+        },
+
+        /**
+         * 清除日期选择
+         */
+        handleSelectClear() {
+            this.date = ''
+            this.selectedComments = [];
         },
 
         /**
@@ -461,7 +244,7 @@ export default {
             let key = localStorage.getItem('weixinkey');
             let str = vm.selectedComments.join(','); //'6dcd20f4f4904bc2b8baf2fbb7e197c5'
             if (key) {
-                API.exportComments({ cIDs: str, key: key }).then(result => {
+                API.exportComments({ cIDs: str, key: key, louNum:'1'}).then(result => {
                     if (result.data.code == 0) {
                         vm.shareLink = result.data.data;
                         console.log(vm.shareLink);
@@ -481,7 +264,7 @@ export default {
         /**
          * 获取签名
          */
-         getSignature() {
+        getSignature() {
             API.getSignature().then(result => {
                 if (result.data.code == 0) {
                     this.signature = 'jsapi_ticket=' + result.data.data + '&noncestr=' + this.nonceStr + '&timestamp=' + this.timestamp + '&url=' + this.url;
@@ -759,50 +542,33 @@ export default {
     margin-top: 8px;
 }
 
-.com-text {
-    font-size: .28rem;
-    line-height: .44rem;
+.comments {
+    height: calc(100% - 180px);
+    border-top: 1px solid #dfdfdf;
+    border-bottom: 1px solid #dfdfdf;
+    margin: 0 .28rem;
 }
 
-.com-child {
-    display: block;
+.com-list {
+    height: 100%;
+    overflow-y: scroll;
 }
 
-.com-child-li .com-child-inforwrap {
-    width: 100%;
-    padding-left: .35rem;
-}
-
-.com-username {
-    font-size: .28rem;
-    color: #333;
-}
-
-.com-child-li .com-child-inforcon {
-    padding-top: 0.08rem;
-}
-
-.com-li-title {
-    background-color: transparent;
-    height: .48rem;
-    line-height: .48rem;
-    color: #333;
-    font-size: .28rem;
-}
-
-.com-li-title-state {
-    padding-right: 5px;
-    width: 40%;
-}
-
-.com-li-title-name {
-    padding-left: 0;
+.com-checkBox {
+    display: inline-block;
+    float: right;
+    margin-right: -10px;
+    margin-top: 0;
 }
 
 .com-infor {
     margin: 0;
-    line-height: .48rem;
-    height: .48rem;
+    height: .6rem;
+    line-height: .6rem;
+}
+
+::v-deep .v-input--selection-controls__input .v-icon {
+    color: #0066CC
 }
 
 /* 分享遮罩-shart */
@@ -823,5 +589,78 @@ export default {
     padding: 10px 15px;
     float: right;
 }
+
 /* 分享遮罩-end */
+
+/* 时间选择器-start */
+.v-picker {
+    font-size: 14px;
+}
+
+::v-deep .mdi-calendar {
+    color: #0066CC !important;
+}
+
+.j-sure-date {
+    font-size: .24rem;
+    float: right;
+    width: 30px;
+    padding-top: 6px;
+}
+
+.j-clear-date {
+    font-size: .24rem;
+    float: right;
+    width: 30px;
+    height: 40px;
+    padding: 10px 10px 10px 0;
+}
+
+
+.j-clear-date span {
+    font-size: .24rem;
+    float: left;
+    width: 30px;
+    height: 40px;
+    padding: 10px 10px 10px 0;
+}
+
+.j-clear-date svg {
+    width: 100%;
+    height: 100%;
+}
+
+.j-clear-date.col-2 {
+    padding-left: 0;
+    padding-top: 0;
+}
+
+::v-deep .v-text-field__details {
+    display: none;
+}
+
+::v-deep .v-input__slot {
+    margin-bottom: 0;
+}
+
+.j-date .col-9 {
+    padding-top: 0;
+    padding-bottom: 15px;
+}
+
+::v-deep .j-clear-date .v-btn:not(.v-btn--round).v-size--small {
+    height: 22px;
+    min-width: 50px;
+    padding: 0 8px;
+}
+
+::v-deep .j-date .v-text-field {
+    padding-top: 0;
+}
+
+::v-deep .j-date .v-text-field input {
+    font-size: .3rem;
+}
+
+/* 时间选择器-end */
 </style>

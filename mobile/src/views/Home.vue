@@ -113,28 +113,28 @@ export default {
                     controlSort: 'constructural',
                     controlComNumTotal: 0,
                     controlComNumUnconfirmed: 0,
-                    color: 'primary',
+                    color: '#0066CC',
                 },
                 {
                     controlName: '防水基层',
                     controlSort: 'conwaterproofbase',
                     controlComNumTotal: 0,
                     controlComNumUnconfirmed: 0,
-                    color: 'secondary',
+                    color: '#0099FF',
                 },
                 {
                     controlName: '防水层',
                     controlSort: 'conwaterproof',
                     controlComNumTotal: 0,
                     controlComNumUnconfirmed: 0,
-                    color: 'accent',
+                    color: '#00CCFF',
                 },
                 {
                     controlName: '面层',
                     controlSort: 'consurface',
                     controlComNumTotal: 0,
                     controlComNumUnconfirmed: 0,
-                    color: 'error',
+                    color: '#66CCFF',
                 }
             ]
         };
@@ -176,7 +176,10 @@ export default {
                 
                 if (res.data.code == 0 && !res.data.data.openId && !res.data.data.userName) {
                     //未登录
-                    let url = API.baseURL + '/weixinlogin?key=' + res.data.data.key + '&router=' + window.location.href.split("#")[1];
+                    //线下
+                    //let url = API.baseURL + '/weixinlogin?key=' + res.data.data.key + '&router=' + window.location.href.split("#")[1];
+                    //线上
+                    let url = API.baseURL + '/weixinlogin?key=' + res.data.data.key + '&router=' + '/01_huacao/1/index.html@'  + window.location.href.split("#")[1];
                     window.location.href = url;
                 } else {
                     //已登录
@@ -259,6 +262,7 @@ export default {
             // let listArr = [
             //     {
             //         'controlSort': 'constructural',
+            //         'controlName':'结构层',
             //         'controlPointSortArr':[
             //             {
             //                 'controlPointSort':'02',
@@ -310,6 +314,7 @@ export default {
                 // 第一次对比没有参照，放入参照
                 listArr.push({
                     controlSort: el.controlSort,
+                    controlName: el.controlName,
                     controlPointSortArr: [
                         {
                             controlPointSort: el.controlPointSort,
@@ -451,6 +456,7 @@ export default {
     margin-right: 4px;
     height: 0.88rem !important;
     padding: 0 10px;
+    color:#fff;
 }
 
 .j-control-card .j-control-problem-btn {
