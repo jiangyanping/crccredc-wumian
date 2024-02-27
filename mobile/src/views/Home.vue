@@ -142,7 +142,7 @@ export default {
     mounted: function () {
         this.handleQueryComs();  //查询评论，处理，获取评论数量信息
         this.handleKey();
-        document.title = '华漕1#屋面';
+        document.title = API.docTitle;
     },
     methods: {
         handleKey() {
@@ -179,7 +179,8 @@ export default {
                     //线下
                     //let url = API.baseURL + '/weixinlogin?key=' + res.data.data.key + '&router=' + window.location.href.split("#")[1];
                     //线上
-                    let url = API.baseURL + '/weixinlogin?key=' + res.data.data.key + '&router=' + '/01_huacao/1/index.html@'  + window.location.href.split("#")[1];
+                    //let url = API.baseURL + '/weixinlogin?key=' + res.data.data.key + '&router=' + '/01_huacao/1/index.html@'  + window.location.href.split("#")[1];
+                    let url = API.baseURL + '/weixinlogin?key=' + res.data.data.key + '&router=' + API.weixinLoginRedirectUrl  + window.location.href.split("#")[1];
                     window.location.href = url;
                 } else {
                     //已登录

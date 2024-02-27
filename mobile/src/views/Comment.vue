@@ -332,7 +332,7 @@ export default {
             //分享
             shareWord: false,
             url: '',
-            appId: 'wx72cc3345b698d35e',//'wxc9760cd0f9ffcfbc',   //开发环境的    wx72cc3345b698d35e   //生产环境的 
+            appId: API.appId,  //'wx72cc3345b698d35e',//'wxc9760cd0f9ffcfbc',   //开发环境的    wx72cc3345b698d35e   //生产环境的  
             timestamp: '',
             nonceStr: 'Wm3WZYTPz0wzccnW',
             signature: '',
@@ -340,7 +340,7 @@ export default {
             shareTitle: '屋面工程整改单',  //分享标题
             shareDesc: '描述',   //分享描述
             shareLink: '',   //分享链接
-            shareImgUrl: 'http://conmanage.rebim.cn/A-others/images/one.jpg',   //分享图标
+            shareImgUrl: API.shareImgUrl //'http://conmanage.rebim.cn/A-others/images/one.jpg',   //分享图标
         };
 
     },
@@ -380,7 +380,7 @@ export default {
                         let year = date.getFullYear();
                         let month = (date.getMonth() + 1).toString().padStart(2, '0');
                         let day = date.getDate().toString().padStart(2, '0');
-                        vm.shareDesc = '华漕1#楼-' + year + '/' + month + '/' + day + '-' + result.data.data.realName + '导出';
+                        vm.shareDesc = API.buildingName + '-' + year + '/' + month + '/' + day + '-' + result.data.data.realName + '导出';
                         vm.handleQueryComs();
                     }
                 });

@@ -8,35 +8,40 @@
         <!-- <p>{{ selectedComments }}</p> -->
         <p style="text-align: left;margin-left: 50px;margin-bottom: 0;line-height: 40px;">请选择要导出的评论 <span
                 style="float:right;margin-right:.3rem;font-size: .28rem;">已选择数: {{ selectedComments.length }}</span></p>
-        <div class="j-date">
-            <v-row>
-                <v-col cols="9" sm="6" md="4">
+        <div class="j-selectConditions">
+            <v-row class="j-date">
+                <v-col cols="9">
                     <v-menu ref="menu" v-model="menu" :close-on-content-click="false" :nudge-right="40"
                         transition="scale-transition" offset-y min-width="auto">
                         <template v-slot:activator="{ on, attrs }">
                             <v-text-field v-model="date" placeholder="请选择删选日期" prepend-icon="mdi-calendar" readonly
                                 v-bind="attrs" v-on="on"></v-text-field>
                         </template>
-                        <v-date-picker v-model="date" :allowed-dates="allowedDates" :events="functionEvents" event-color="primary lighten-1" no-title
-                            :show-current="false" @input="menu = false" locale="zh-cn"></v-date-picker>
+                        <v-date-picker v-model="date" :allowed-dates="allowedDates" :events="functionEvents"
+                            event-color="primary lighten-1" no-title :show-current="false" @input="menu = false"
+                            locale="zh-cn"></v-date-picker>
                     </v-menu>
                 </v-col>
-                <!-- <v-col cols="2" class="j-clear-date">
-                    <span @click="handleSelectClear">
-                        <svg t="1707028626783" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                            xmlns="http://www.w3.org/2000/svg" p-id="1474" width="64" height="64">
-                            <path
-                                d="M576 512l277.333333 277.333333-64 64-277.333333-277.333333L234.666667 853.333333 170.666667 789.333333l277.333333-277.333333L170.666667 234.666667 234.666667 170.666667l277.333333 277.333333L789.333333 170.666667 853.333333 234.666667 576 512z"
-                                fill="#666666" p-id="1475"></path>
-
-                        </svg>
-                    </span>
-                </v-col> -->
                 <v-col cols="3" style="margin-top: -4px;">
-                    <!-- <v-btn small class="text-no-wrap rounded-pill j-sure-date" outlined color="primary"
-                        @click="handleSelectDateSure">确定</v-btn> -->
                     <v-btn small class="text-no-wrap rounded-pill j-clear-date" outlined color="primary"
-                        @click="handleSelectClear">清空</v-btn>
+                        @click="handleSelectClear()">清空</v-btn>
+                </v-col>
+            </v-row>
+            <v-row class="j-state">
+
+                <v-col cols="12">
+                    <v-radio-group v-model="state" row>
+                        <template v-slot:label>
+                            <div class="j-state-text">请选择评论状态</div>
+                        </template>
+                        <v-radio label="待整改" value="待"></v-radio>
+                        <v-radio label="已整改" value="已"></v-radio>
+                    </v-radio-group>
+                </v-col>
+            </v-row>
+            <v-row class="j-person">
+                <v-col cols="9">
+                    <v-select v-model="createby" :items="comCreateby" label="请选择提出人" single-line></v-select>
                 </v-col>
             </v-row>
         </div>
@@ -74,9 +79,13 @@
             <div class="noComments" v-else><span>暂无评论</span></div>
         </div>
         <v-row class="text-center j-export-comments" justify="center">
-            <v-col cols="12">
+            <v-col cols="6">
                 <v-btn block large class="primary text-no-wrap rounded-pill j-export-comments-btn"
                     @click="handleExportComments">确认导出并分享</v-btn>
+            </v-col>
+            <v-col cols="6" style="padding-left:0;">
+                <v-btn block large class="primary text-no-wrap rounded-pill j-export-comments-btn"
+                    @click="handleExportCommentsReply">整改回复导出并分享</v-btn>
             </v-col>
         </v-row>
         <div @click.stop="handleGoBack" class="goBack">
@@ -101,6 +110,11 @@ export default {
             //日期控件
             date: '',
             menu: false,
+            //评论状态state
+            state: '',
+            //问题提出人
+            createby: '',
+            comCreateby: [],
 
             proid: '08fa9423-a2d5-48a9-aa44-1d97f10e8ae9',
             allCommentsData: [],  //后台请求回的评论数据，经过处理的,所有pid为0的
@@ -118,7 +132,7 @@ export default {
             //分享
             shareWord: false,
             url: '',
-            appId: 'wx72cc3345b698d35e',//'wxc9760cd0f9ffcfbc',   //开发环境的    wx72cc3345b698d35e   //生产环境的 
+            appId: API.appId,  //'wx72cc3345b698d35e',//'wxc9760cd0f9ffcfbc',   //开发环境的    wx72cc3345b698d35e   //生产环境的 
             timestamp: '',
             nonceStr: 'Wm3WZYTPz0wzccnW',
             signature: '',
@@ -132,22 +146,71 @@ export default {
     watch: {
         date: {
             handler(newVal) {
-                this.handleSelectDateSure(newVal);
+                if (newVal != '') {
+                    this.state = '';
+                    this.createby = '';
+                    this.handleSelectSure('');
+                    this.handleSelectSure(newVal, 'date');
+                }
             },
             immediate: true, //首次绑定的时候，是否执行 handler
         },
+        state: {
+            handler(newVal) {
+                if (newVal != '') {
+                    this.date = '';
+                    this.createby = '';
+                    this.handleSelectSure('');
+                    this.handleSelectSure(newVal, 'state');
+                }
+            },
+            immediate: true, //首次绑定的时候，是否执行 handler
+        },
+        createby: {
+            handler(newVal) {
+                if (newVal != '') {
+                    this.date = '';
+                    this.state = '';
+                    this.handleSelectSure('');
+                    this.handleSelectSure(newVal, 'createby');
+                }
+            },
+            immediate: true, //首次绑定的时候，是否执行 handler
+        }
     },
 
     mounted() {
         this.weixinislogin();
-        document.title = '导出评论';
+        document.title = API.docTitle + '-导出评论';
     },
     methods: {
+        //获取问题发起人
+        getUsers(key) {
+            let vm = this;
+            API.getUsers({ key: key }).then(result => {
+                if (result.data.code == 0) {
+                    for (let i = 0; i < result.data.data.length; i++) {
+                        for (let j = i + 1; j < result.data.data.length; j++) {
+                            if (result.data.data[i].realName == result.data.data[j].realName) {
+                                result.data.data.splice(j, 1);
+                                j--;
+                            }
+                        }
+                    }
+                    let arr = [];
+                    for (let i = 0; i < result.data.data.length; i++) {
+                        arr.push(result.data.data[i].realName);
+                    }
+                    vm.comCreateby = arr;
+                }
+            });
+        },
+
         allowedDates(date) {
             let vm = this;
             function allowed(vm) {
                 for (let item of vm.allCommentsData) {
-                    if(item.createat.slice(0, 10) == date) return true;
+                    if (item.createat.slice(0, 10) == date) return true;
                 }
             }
             return allowed(vm);
@@ -169,8 +232,9 @@ export default {
                         let year = date.getFullYear();
                         let month = (date.getMonth() + 1).toString().padStart(2, '0');
                         let day = date.getDate().toString().padStart(2, '0');
-                        vm.shareDesc = '华漕1#楼-' + year + '/' + month + '/' + day + '-' + result.data.data.realName + '导出';
+                        vm.shareDesc = API.buildingName + '-' + year + '/' + month + '/' + day + '-' + result.data.data.realName + '导出';
                         vm.handleQueryComs(); //查询评论，处理，获取评论数量信息
+                        vm.getUsers(key);  //获取问题发起人，供以发起人筛选条件
                     }
                 });
             } else {
@@ -207,12 +271,14 @@ export default {
         },
 
         /**
-         * 选择日期
+         * 删选，选择日期或者状态或者问题发起人
          */
-        handleSelectDateSure(date) {
+        handleSelectSure(data, sort) {
             let arr = [];
-            if (date != '') {
-                arr = this.allCommentsData.filter(item => item.createat.slice(0, 10) == date);
+            if (data != '') {
+                if (sort == 'date') arr = this.allCommentsData.filter(item => item.createat.slice(0, 10) == data);
+                if (sort == 'state') arr = this.allCommentsData.filter(item => item.comState == data);
+                if (sort == 'createby') arr = this.allCommentsData.filter(item => item.createby == data);
             } else {
                 arr = this.allCommentsData;
             }
@@ -221,11 +287,13 @@ export default {
         },
 
         /**
-         * 清除日期选择
+         * 清除选择条件
          */
         handleSelectClear() {
-            this.date = ''
-            this.selectedComments = [];
+            this.state = '';
+            this.date = '';
+            this.createby = '';
+            this.handleSelectSure('');
         },
 
         /**
@@ -244,7 +312,33 @@ export default {
             let key = localStorage.getItem('weixinkey');
             let str = vm.selectedComments.join(','); //'6dcd20f4f4904bc2b8baf2fbb7e197c5'
             if (key) {
-                API.exportComments({ cIDs: str, key: key, louNum:'1'}).then(result => {
+                API.exportComments({ cIDs: str, key: key, louNum: '1' }).then(result => {
+                    if (result.data.code == 0) {
+                        vm.shareLink = result.data.data;
+                        console.log(vm.shareLink);
+                        const indexOfHash = window.location.href.indexOf('#');
+                        // 如果找到了 #，则截取字符串；否则，返回原始字符串
+                        vm.url = indexOfHash !== -1 ? window.location.href.substring(0, indexOfHash) : window.location.href;
+                        console.log(vm.url);
+                        vm.timestamp = (Date.now()).toString().substring(0, 10);
+                        vm.getSignature();
+                    }
+                });
+            } else {
+                this.$router.push('/home');  //评论页分享出去，如果localStorage里有key，则请求用户登录信息，否则跳转至home页。
+            }
+        },
+
+        /**
+         * 整改回复导出评论
+         */
+        handleExportCommentsReply() {
+            let vm = this;
+            vm.shareWord = true;
+            let key = localStorage.getItem('weixinkey');
+            let str = vm.selectedComments.join(','); //'6dcd20f4f4904bc2b8baf2fbb7e197c5'
+            if (key) {
+                API.exportCommentsReply({ cIDs: str, key: key, louNum: '1' }).then(result => {
                     if (result.data.code == 0) {
                         vm.shareLink = result.data.data;
                         console.log(vm.shareLink);
@@ -543,7 +637,7 @@ export default {
 }
 
 .comments {
-    height: calc(100% - 180px);
+    height: calc(100% - 260px);
     border-top: 1px solid #dfdfdf;
     border-bottom: 1px solid #dfdfdf;
     margin: 0 .28rem;
@@ -592,7 +686,7 @@ export default {
 
 /* 分享遮罩-end */
 
-/* 时间选择器-start */
+/* 删选条件-start */
 .v-picker {
     font-size: 14px;
 }
@@ -643,9 +737,31 @@ export default {
     margin-bottom: 0;
 }
 
-.j-date .col-9 {
+.j-selectConditions {
+    margin: 0 .28rem;
+}
+
+.j-date .col,
+
+.j-person .col {
+    padding: 0;
+}
+
+.j-date .col-3 {
+    padding-top: 12px;
+}
+
+.j-state .col {
+    padding: 12px 0 8px 0;
+}
+
+.j-person .col {
+    padding-bottom: 12px;
+}
+
+.j-person .v-text-field {
     padding-top: 0;
-    padding-bottom: 15px;
+    margin-top: 0;
 }
 
 ::v-deep .j-clear-date .v-btn:not(.v-btn--round).v-size--small {
@@ -659,8 +775,39 @@ export default {
 }
 
 ::v-deep .j-date .v-text-field input {
-    font-size: .3rem;
+    font-size: .28rem;
 }
 
-/* 时间选择器-end */
+.v-input--selection-controls[data-v-5aede2fc] {
+    margin-top: 0;
+}
+
+::v-deep .j-selectConditions .v-input--selection-controls .v-radio>.v-label {
+    font-size: .28rem;
+}
+
+.j-state .j-state-text {
+    font-size: .28rem;
+}
+
+::v-deep .j-person .v-select.v-text-field input {
+    font-size: .28rem;
+}
+
+::v-deep .j-person .v-input .v-label {
+    font-size: .28rem;
+}
+
+.j-person {}
+
+/* 删选条件-end */
+</style>
+<style>
+.v-list-item__title {
+    font-size: .28rem;
+}
+
+.v-select__selection--comma{
+    font-size: .28rem;
+}
 </style>

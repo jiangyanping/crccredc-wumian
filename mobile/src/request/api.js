@@ -21,7 +21,7 @@ export const API = {
     },
 
     //微信登录,添加真实姓名
-    addRealName:(query) => {
+    addRealName: (query) => {
         return request({
             url: '/addRealName',
             method: 'get',
@@ -74,9 +74,9 @@ export const API = {
             params: query
         })
     },
-    
+
     //导出评论
-    exportComments:(query)=>{
+    exportComments: (query) => {
         return request({
             url: '/comment/wordExport',
             method: 'get',
@@ -84,11 +84,29 @@ export const API = {
         })
     },
 
+    //导出回复评论
+    exportCommentsReply: (query) => {
+        return request({
+            url: '/comment/wordExportReply',
+            method: 'get',
+            params: query
+        })
+    },
+
     //导出评论，获取签名
-    getSignature:()=>{
+    getSignature: () => {
         return request({
             url: '/comment/signature',
             method: 'get',
+        })
+    },
+
+    //获取问题发起人
+    getUsers: (query) => {
+        return request({
+            url: '/comment/getUsers',
+            method: 'get',
+            params: query
         })
     },
 
@@ -123,5 +141,10 @@ export const API = {
     baseURL: request.defaults.baseURL,
     baseModelURL: request.defaults.baseModelURL,
     onlinePreviewFileUrl: request.defaults.onlinePreviewFileUrl,
+    appId: request.appId,
+    buildingName: request.buildingName,
+    shareImgUrl: request.defaults.shareImgUrl,
+    weixinLoginRedirectUrl: request.weixinLoginRedirectUrl,
+    docTitle: request.docTitle,
 };
 export default API;

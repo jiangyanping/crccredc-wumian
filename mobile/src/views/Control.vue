@@ -9,7 +9,8 @@
             </div>
             <v-row class="text-center mt-3 mb-3" justify="center">
                 <v-col cols="12" md="3" style="padding:16px;">
-                    <v-btn block large class="pa-2 primary text-no-wrap rounded-pill j-look-model" @click="handleLookModel">查看模型</v-btn>
+                    <v-btn block large class="pa-2 primary text-no-wrap rounded-pill j-look-model"
+                        @click="handleLookModel">查看模型</v-btn>
                 </v-col>
             </v-row>
             <v-row class="text-center mx-5 j-control-legend" justify="center">
@@ -76,7 +77,12 @@
             </v-row>
         </div>
         <div @click.stop="handleGoBack" class="goBack">
-            <svg t="1704783045457" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1291" width="64" height="64"><path d="M708.42516 957.314205c-13.715373 0-27.426653-5.215792-37.895075-15.678074L277.717627 548.823674c-20.925588-20.893866-20.925588-54.821583 0-75.747171L670.530085 80.225159c20.931728-20.925588 54.821583-20.925588 75.752288 0 20.925588 20.893866 20.925588 54.821583 0 75.747171L391.359874 510.934738l354.922499 354.915335c20.925588 20.931728 20.925588 54.821583 0 75.753311C735.852836 952.098413 722.135416 957.314205 708.42516 957.314205L708.42516 957.314205zM708.42516 957.314205" fill="#ffffff" p-id="1292"></path></svg>
+            <svg t="1704783045457" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                p-id="1291" width="64" height="64">
+                <path
+                    d="M708.42516 957.314205c-13.715373 0-27.426653-5.215792-37.895075-15.678074L277.717627 548.823674c-20.925588-20.893866-20.925588-54.821583 0-75.747171L670.530085 80.225159c20.931728-20.925588 54.821583-20.925588 75.752288 0 20.925588 20.893866 20.925588 54.821583 0 75.747171L391.359874 510.934738l354.922499 354.915335c20.925588 20.931728 20.925588 54.821583 0 75.753311C735.852836 952.098413 722.135416 957.314205 708.42516 957.314205L708.42516 957.314205zM708.42516 957.314205"
+                    fill="#ffffff" p-id="1292"></path>
+            </svg>
         </div>
     </div>
 </template>
@@ -263,10 +269,10 @@ export default {
 
         this.controlSort = this.$route.params.controlSort;
         this.handleQueryComs();  //查询评论，处理，获取评论数量信息
-        if(this.controlSort == 'constructural') document.title = '结构层检查';
-        if(this.controlSort == 'conwaterproofbase') document.title = '防水基层检查';
-        if(this.controlSort == 'conwaterproof') document.title = '防水层检查';
-        if(this.controlSort == 'consurface') document.title = '面层检查';
+        if (this.controlSort == 'constructural') document.title = '结构层检查';
+        if (this.controlSort == 'conwaterproofbase') document.title = '防水基层检查';
+        if (this.controlSort == 'conwaterproof') document.title = '防水层检查';
+        if (this.controlSort == 'consurface') document.title = '面层检查';
 
 
         // for (const point of this.drawingPoints) {
@@ -309,10 +315,7 @@ export default {
             API.weixinislogin({ key: key }).then(res => {
                 console.log(res.data);
                 if (res.data.code == 0 && !res.data.data.openId && !res.data.data.userName) {
-                    //线下
-                    //let url = API.baseURL + '/weixinlogin?key=' + res.data.data.key + '&router=' + window.location.href.split("#")[1];
-                    //线上
-                    let url = API.baseURL + '/weixinlogin?key=' + res.data.data.key + '&router=' + '/01_huacao/1/index.html@'  + window.location.href.split("#")[1];
+                    let url = API.baseURL + '/weixinlogin?key=' + res.data.data.key + '&router=' + API.weixinLoginRedirectUrl + window.location.href.split("#")[1];
                     window.location.href = url;
                 } else {
                     //已登录
@@ -370,7 +373,7 @@ export default {
             vm.commentsData = [];
             //API.getComments({ proid: this.comParams.proid, key: this.comParams.key }).then(res => {
             API.getComments({ proid: this.proid }).then(res => {
-                
+
                 if (Number(res.data.code) === 0) {
                     this.attrsDataDeal(res.data.data);
                     for (let item of vm.controlPointsData) {
@@ -748,9 +751,9 @@ export default {
     box-sizing: border-box;
     border-radius: 8px;
 }
-.j-look-model{
-    width:100%;
+
+.j-look-model {
+    width: 100%;
     height: 0.88rem;
-}
-</style>
+}</style>
   
