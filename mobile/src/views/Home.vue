@@ -32,7 +32,7 @@
                 <v-card-text>
                     <v-row>
                         <v-btn class="j-control-node-btn" depressed :color=item.color><router-link
-                                :to="'/control/'+item.controlSort">{{ item.controlName }}检查</router-link>></v-btn>
+                                :to="'/control/' + item.controlSort">{{ item.controlName }}检查</router-link>></v-btn>
                         <div class="j-control-info">
                             <span class="" :class="(item.controlComNumTotal != 0) ? 'color-grey' : 'color-red'"
                                 v-if="item.controlComNumTotal != 0">已检查</span>
@@ -47,64 +47,32 @@
                                 :class="(item.controlComNumUnconfirmed == 0) ? 'color-red' : 'color-grey'">待整改{{
                                     item.controlComNumUnconfirmed }}条</span>
                         </div>
-                        <v-btn class="j-control-problem-btn pa-2 mt-1" outlined color="teal"
-                            @click.prevent="getWeixinKey('/comment/' + item.controlSort + '/00')">问题清单</v-btn>
+                        <v-btn class="j-control-problem-btn pa-2 mt-1" outlined color="teal">
+                            <router-link :to="'/comment/' + item.controlSort + '/00'">问题清单</router-link>
+                        </v-btn>
                     </v-row>
                 </v-card-text>
             </v-card>
-            <!-- <v-card class="mx-auto ma-3 mlr4 j-control-card" max-width="374">
-                <v-card-text>
-                    <v-row>
-                        <v-btn class="j-control-node-btn" depressed color="secondary"><router-link
-                                to="/control/conwaterproofbase">防水基层检查</router-link>></v-btn>
-                        <div class="j-control-info">
-                            <span class="">已检查</span>
-                            <span class="">共3条</span>
-                            <span class="color-red">待整改1条</span>
-                        </div>
-                        <v-btn class="j-control-problem-btn pa-2 mt-1" outlined color="teal"
-                            @click.prevent="getWeixinKey('/comment/conwaterproofbase/00')">问题清单</v-btn>
-                    </v-row>
-                </v-card-text>
-            </v-card> -->
         </div>
         <v-row class="text-center my-3 mb-12" justify="center">
             <v-col cols="12" style="padding:16px;">
-                <v-btn block large class="pa-2 primary text-no-wrap rounded-pill j-export-comments"
-                    @click.prevent="getWeixinKey(`/exportComments`)">导出评论</v-btn>
+                <v-btn block large class="pa-2 primary text-no-wrap rounded-pill j-export-comments">
+                    <router-link :to="'/exportComments'">导出评论</router-link>
+                </v-btn>
             </v-col>
         </v-row>
-        <div class="j-realName" v-show="popupRealName">
-            <div class="mask-inpField" v-show="popupRealName" @click.prevent="popupRealName = !popupRealName"></div>
-            <v-row justify="space-between" class="j-realName-inp mx-4">
-                <v-col cols="12">
-                    <v-form ref="form">
-                        <v-text-field v-model="realNameObj.realName" label="真实姓名：" required></v-text-field>
-                        <v-btn class="j-realName-btn pa-2 mt-1" color="primary"
-                            @click.prevent="handleAddRealName">确定</v-btn>
-                    </v-form>
-                </v-col>
-            </v-row>
-        </div>
     </div>
 </template>
 
 <script>
 import API from "../request/api.js";
+import weixinLogin from "../assets/js/weixinLogin.js";
 export default {
     name: 'Home',
     components: {
-
     },
     data: function () {
         return {
-            popupRealName: false,
-            realNameObj: {
-                key: '',
-                openId: '',
-                realName: '',
-            },
-
             proid: '08fa9423-a2d5-48a9-aa44-1d97f10e8ae9',
             dealCommentsData: [],  //后台请求回的评论数据，经过处理的
             control: [
@@ -140,85 +108,25 @@ export default {
         };
     },
     mounted: function () {
-        this.handleQueryComs();  //查询评论，处理，获取评论数量信息
-        this.handleKey();
+        this.weixinIsLogin();
         document.title = API.docTitle;
     },
     methods: {
-        handleKey() {
-            let key = '';
-            let urlHasKey = location.href.indexOf('key') > -1 && location.href.length > 1 ? location.href.split("key")[1] : "";
-            if (urlHasKey) {
-                key = urlHasKey.split("#")[0].slice(1);
-                localStorage.setItem('weixinkey', key);
-                window.location.href = location.href.split("?")[0];  //微信登录回来，地址中key，要存储key并且改变地址，去掉key
-            }
-            return key;
-        },
-        /**
-         * getWeixinKey  获取微信登录的可以值，一句key获取用户信息
-         */
-        getWeixinKey(route) {
-            let key = '';
-            if (localStorage.getItem('weixinkey')) {
-                key = localStorage.getItem('weixinkey');
-                console.log(key);
-            } else {
-                key = this.handleKey();
-            }
-            this.weixinislogin(key, route);
-        },
         /**
          * 微信是否登录
          */
-        weixinislogin(key, route) {
-            API.weixinislogin({ key: key }).then(res => {
-                
-                if (res.data.code == 0 && !res.data.data.openId && !res.data.data.userName) {
-                    //未登录
-                    //线下
-                    //let url = API.baseURL + '/weixinlogin?key=' + res.data.data.key + '&router=' + window.location.href.split("#")[1];
-                    //线上
-                    //let url = API.baseURL + '/weixinlogin?key=' + res.data.data.key + '&router=' + '/01_huacao/1/index.html@'  + window.location.href.split("#")[1];
-                    let url = API.baseURL + '/weixinlogin?key=' + res.data.data.key + '&router=' + API.weixinLoginRedirectUrl  + window.location.href.split("#")[1];
-                    window.location.href = url;
-                } else {
-                    //已登录
-                    if (!res.data.data.realName) {
-                        //判断是否有realName：真实姓名，没有，让填写
-                        this.popupRealName = !this.popupRealName;
-                        this.realNameObj.key = res.data.data.key;
-                        this.realNameObj.openId = res.data.data.openId;
-                    } else {
-                        this.$router.push(route);
-                    }
-                }
-            });
-        },
-
-        /**
-         * 增加真是姓名，用于评论显示人称
-         */
-        handleAddRealName() {
-            if (!this.realNameObj.realName) {
-                alert('请填写真实姓名');
-                return;
+        async weixinIsLogin(){
+            let res = await weixinLogin.getWeixinKey();
+            if(res && res.realName){
+                this.handleQueryComs();  //查询评论，处理，获取评论数量信息
             }
-            //判断是否有realName：真实姓名，没有，让填写
-            API.addRealName({ key: this.realNameObj.key, openId: this.realNameObj.openId, realName: this.realNameObj.realName }).then(res => {
-                if (res.data.code == 0 && res.data.msg.indexOf('成功') > -1) {
-                    Object.assign(this.$data, this.$options.data().realNameObj);
-                    this.popupRealName = !this.popupRealName;
-                    alert("保存成功");
-                }
-            });
         },
 
         /**
          * 查看模型
          */
         handleLookModel() {
-            this.$router.push('/Engine/ho/00');
+            this.$router.push('/engine/ho/00');
         },
 
         /**
@@ -357,6 +265,7 @@ export default {
 
 <style type="text/css" scoped>
 @import '../assets/css/comment.css';
+
 .row {
     margin: 0;
 }
@@ -436,9 +345,7 @@ export default {
     flex: 1;
 }
 
-.j-control {
-   
-}
+.j-control {}
 
 .j-control-card {
     max-width: none !important;
@@ -457,7 +364,7 @@ export default {
     margin-right: 4px;
     height: 0.88rem !important;
     padding: 0 10px;
-    color:#fff;
+    color: #fff;
 }
 
 .j-control-card .j-control-problem-btn {
@@ -488,27 +395,19 @@ export default {
     padding: 0 0.04rem;
 }
 
-.mask-inpField {
-    background: rgba(0, 0, 0, 0.5);
-}
-
-.j-realName .j-realName-inp {
-    position: absolute;
-    top: 40%;
-    width: calc(100% - 32px);
-    background-color: #fff;
-    z-index: 10004;
-    box-sizing: border-box;
-    border-radius: 8px;
-}
-
 .j-look-model {
     width: 100%;
-    height: 0.88rem!important;
+    height: 0.88rem !important;
 }
-.j-export-comments{
+
+.j-export-comments {
     width: 100%;
-    height: 0.88rem!important;
+    height: 0.88rem !important;
+}
+
+.v-application .j-export-comments a{
+    color:#fff;
+    width:100%;
 }
 </style>
 

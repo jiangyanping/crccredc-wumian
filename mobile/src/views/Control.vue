@@ -43,25 +43,12 @@
                                 <span class="">共{{ item.commentNumTotal }}条</span>
                                 <span class="">待整改{{ item.commentNumUnconfirmed }}条</span>
                             </div>
-                            <v-btn class="j-control-problem-btn pa-2 mt-1" outlined color="teal"
-                                @click.prevent="getWeixinKey(`/comment/${controlSort}/${item.controlPointSort}`)">问题记录</v-btn>
+                            <v-btn class="j-control-problem-btn pa-2 mt-1" outlined color="teal">
+                                <router-link :to="`/comment/${controlSort}/${item.controlPointSort}`">问题记录</router-link>
+                            </v-btn>
                         </v-row>
                     </v-card-text>
                 </v-card>
-                <!-- <v-card class="mx-auto ma-3 mlr4 j-control-card" max-width="374">
-                    <v-card-text>
-                        <v-row>
-                            <v-btn class="j-control-node-btn bg-color-green" depressed><router-link to="/control"> 01
-                                    平屋面通用做法</router-link></v-btn>
-                            <div class="j-control-info">
-                                <span class="">共5条</span>
-                                <span class="">待整改0条</span>
-                            </div>
-                            <v-btn class="j-control-problem-btn pa-2 mt-1" outlined color="teal"
-                                @click.prevent="getWeixinKey(`/comment/${controlSort}/01`)">问题记录</v-btn>
-                        </v-row>
-                    </v-card-text>
-                </v-card> -->
             </div>
         </div>
         <div class="j-realName" v-show="popupRealName">
@@ -90,6 +77,7 @@
 <script>
 import API from "../request/api.js";
 import controlPointsData from "../data/controlPointsData"
+import weixinLogin from "../assets/js/weixinLogin.js";
 export default {
     name: 'Menu',
     data() {
@@ -268,82 +256,25 @@ export default {
     mounted() {
 
         this.controlSort = this.$route.params.controlSort;
-        this.handleQueryComs();  //查询评论，处理，获取评论数量信息
-        if (this.controlSort == 'constructural') document.title = '结构层检查';
-        if (this.controlSort == 'conwaterproofbase') document.title = '防水基层检查';
-        if (this.controlSort == 'conwaterproof') document.title = '防水层检查';
-        if (this.controlSort == 'consurface') document.title = '面层检查';
+        if (this.controlSort == 'constructural') document.title = API.docTitle + '-结构层检查';
+        if (this.controlSort == 'conwaterproofbase') document.title = API.docTitle + '-防水基层检查';
+        if (this.controlSort == 'conwaterproof') document.title = API.docTitle + '-防水层检查';
+        if (this.controlSort == 'consurface') document.title = API.docTitle + '-面层检查';
 
-
-        // for (const point of this.drawingPoints) {
-        //     if (point.mark == this.mark) {
-        //         this.drawingPoint = point;
-        //     }
-        // }
         this.drawingPoint = this.drawingPoints[0];
-        //this.getWeixinKey();
-
-        this.handleKey();
+        this.weixinIsLogin();
     },
     methods: {
-        handleKey() {
-            let key = '';
-            let urlHasKey = location.href.indexOf('key') > -1 && location.href.length > 1 ? location.href.split("key")[1] : "";
-            if (urlHasKey) {
-                key = urlHasKey.split("#")[0].slice(1);
-                localStorage.setItem('weixinkey', key);
-                window.location.href = location.href.split("?")[0];  //微信登录回来，地址中key，要存储key并且改变地址，去掉key
-            }
-            return key;
-        },
-        /**
-         * getWeixinKey  获取微信登录的可以值，一句key获取用户信息
-         */
-        getWeixinKey(route) {
-            let key = '';
-            if (localStorage.getItem('weixinkey')) {
-                key = localStorage.getItem('weixinkey');
-            } else {
-                key = this.handleKey();
-            }
-            this.weixinislogin(key, route);
-        },
         /**
          * 微信是否登录
          */
-        weixinislogin(key, route) {
-            API.weixinislogin({ key: key }).then(res => {
-                console.log(res.data);
-                if (res.data.code == 0 && !res.data.data.openId && !res.data.data.userName) {
-                    let url = API.baseURL + '/weixinlogin?key=' + res.data.data.key + '&router=' + API.weixinLoginRedirectUrl + window.location.href.split("#")[1];
-                    window.location.href = url;
-                } else {
-                    //已登录
-                    if (!res.data.data.realName) {
-                        //判断是否有realName：真实姓名，没有，让填写
-                        this.popupRealName = !this.popupRealName;
-                        this.realNameObj.key = res.data.data.key;
-                        this.realNameObj.openId = res.data.data.openId;
-                    } else {
-                        this.$router.push(route);
-                    }
-                }
-            });
+         async weixinIsLogin(){
+            let res = await weixinLogin.getWeixinKey();
+            if(res && res.realName){
+                this.handleQueryComs();  //查询评论，处理，获取评论数量信息
+            }
         },
-        /**
-         * 增加真是姓名，用于评论显示人称
-         */
-        handleAddRealName() {
-            //判断是否有realName：真实姓名，没有，让填写
-            API.addRealName({ key: this.realNameObj.key, openId: this.realNameObj.openId, realName: this.realNameObj.realName }).then(res => {
-                if (res.data.code == 0 && res.data.msg.indexOf('成功') > -1) {
-                    Object.assign(this.$data, this.$options.data().realNameObj);
-                    this.popupRealName = !this.popupRealName;
-                    alert("保存成功");
-                }
-            });
-        },
-
+        
         /**
          * 查看模型
          */
@@ -755,5 +686,6 @@ export default {
 .j-look-model {
     width: 100%;
     height: 0.88rem;
-}</style>
+}
+</style>
   

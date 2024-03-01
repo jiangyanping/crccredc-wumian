@@ -103,6 +103,7 @@ import API from "../request/api.js";
 import wx from 'weixin-js-sdk';
 import PhotoSwipe from 'photoswipe'
 import PhotoSwipeUI_Default from 'photoswipe/dist/photoswipe-ui-default'
+import weixinLogin from "../assets/js/weixinLogin.js";
 export default {
     name: 'ExportComments',
     data: function () {
@@ -120,13 +121,8 @@ export default {
             allCommentsData: [],  //后台请求回的评论数据，经过处理的,所有pid为0的
             curentCommentsData: [],  //当前显示的评论
 
-            popupRealName: false,
-            realNameObj: {
-                key: '',
-                openId: '',
-                realName: '',
-            },
             selectedComments: [],
+            key: '',
 
 
             //分享
@@ -180,14 +176,33 @@ export default {
     },
 
     mounted() {
-        this.weixinislogin();
         document.title = API.docTitle + '-导出评论';
+        this.weixinIsLogin();
     },
     methods: {
-        //获取问题发起人
-        getUsers(key) {
+        /**
+         * 微信是否登录
+         */
+        async weixinIsLogin() {
+            let res = await weixinLogin.getWeixinKey();
+            if (res && res.realName) {
+                this.key = res.key;
+                let date = new Date();
+                let year = date.getFullYear();
+                let month = (date.getMonth() + 1).toString().padStart(2, '0');
+                let day = date.getDate().toString().padStart(2, '0');
+                this.shareDesc = API.buildingName + '-' + year + '/' + month + '/' + day + '-' + res.realName + '导出';
+                this.handleQueryComs(); //查询评论，处理，获取评论数量信息
+                this.getUsers();  //获取问题发起人，供以发起人筛选条件
+            }
+        },
+
+        /**
+         * 获取问题发起人
+         */
+        getUsers() {
             let vm = this;
-            API.getUsers({ key: key }).then(result => {
+            API.getUsers({ key: vm.key }).then(result => {
                 if (result.data.code == 0) {
                     for (let i = 0; i < result.data.data.length; i++) {
                         for (let j = i + 1; j < result.data.data.length; j++) {
@@ -206,6 +221,10 @@ export default {
             });
         },
 
+        /**
+         * 有提出问题的日期
+         * @param {*} date 
+         */
         allowedDates(date) {
             let vm = this;
             function allowed(vm) {
@@ -218,28 +237,6 @@ export default {
 
         functionEvents(date) {
             this.allowedDates(date);
-        },
-        /**
-         * 微信是否登录，获取用户信息
-         */
-        weixinislogin() {
-            let vm = this;
-            let key = localStorage.getItem('weixinkey');
-            if (key) {
-                API.weixinislogin({ key: key }).then(result => {
-                    if (result.data.code == 0 && result.data.data.realName) {
-                        let date = new Date();
-                        let year = date.getFullYear();
-                        let month = (date.getMonth() + 1).toString().padStart(2, '0');
-                        let day = date.getDate().toString().padStart(2, '0');
-                        vm.shareDesc = API.buildingName + '-' + year + '/' + month + '/' + day + '-' + result.data.data.realName + '导出';
-                        vm.handleQueryComs(); //查询评论，处理，获取评论数量信息
-                        vm.getUsers(key);  //获取问题发起人，供以发起人筛选条件
-                    }
-                });
-            } else {
-                this.$router.push('/home');  //评论页分享出去，如果localStorage里有key，则请求用户登录信息，否则跳转至home页。
-            }
         },
 
         /**
@@ -309,24 +306,19 @@ export default {
         handleExportComments() {
             let vm = this;
             vm.shareWord = true;
-            let key = localStorage.getItem('weixinkey');
             let str = vm.selectedComments.join(','); //'6dcd20f4f4904bc2b8baf2fbb7e197c5'
-            if (key) {
-                API.exportComments({ cIDs: str, key: key, louNum: '1' }).then(result => {
-                    if (result.data.code == 0) {
-                        vm.shareLink = result.data.data;
-                        console.log(vm.shareLink);
-                        const indexOfHash = window.location.href.indexOf('#');
-                        // 如果找到了 #，则截取字符串；否则，返回原始字符串
-                        vm.url = indexOfHash !== -1 ? window.location.href.substring(0, indexOfHash) : window.location.href;
-                        console.log(vm.url);
-                        vm.timestamp = (Date.now()).toString().substring(0, 10);
-                        vm.getSignature();
-                    }
-                });
-            } else {
-                this.$router.push('/home');  //评论页分享出去，如果localStorage里有key，则请求用户登录信息，否则跳转至home页。
-            }
+            API.exportComments({ cIDs: str, key: vm.key, louNum: API.louNum }).then(result => {
+                if (result.data.code == 0) {
+                    vm.shareLink = result.data.data;
+                    console.log(vm.shareLink);
+                    const indexOfHash = window.location.href.indexOf('#');
+                    // 如果找到了 #，则截取字符串；否则，返回原始字符串
+                    vm.url = indexOfHash !== -1 ? window.location.href.substring(0, indexOfHash) : window.location.href;
+                    console.log(vm.url);
+                    vm.timestamp = (Date.now()).toString().substring(0, 10);
+                    vm.getSignature();
+                }
+            });
         },
 
         /**
@@ -335,24 +327,19 @@ export default {
         handleExportCommentsReply() {
             let vm = this;
             vm.shareWord = true;
-            let key = localStorage.getItem('weixinkey');
             let str = vm.selectedComments.join(','); //'6dcd20f4f4904bc2b8baf2fbb7e197c5'
-            if (key) {
-                API.exportCommentsReply({ cIDs: str, key: key, louNum: '1' }).then(result => {
-                    if (result.data.code == 0) {
-                        vm.shareLink = result.data.data;
-                        console.log(vm.shareLink);
-                        const indexOfHash = window.location.href.indexOf('#');
-                        // 如果找到了 #，则截取字符串；否则，返回原始字符串
-                        vm.url = indexOfHash !== -1 ? window.location.href.substring(0, indexOfHash) : window.location.href;
-                        console.log(vm.url);
-                        vm.timestamp = (Date.now()).toString().substring(0, 10);
-                        vm.getSignature();
-                    }
-                });
-            } else {
-                this.$router.push('/home');  //评论页分享出去，如果localStorage里有key，则请求用户登录信息，否则跳转至home页。
-            }
+            API.exportCommentsReply({ cIDs: str, key: vm.key, louNum: API.louNum }).then(result => {
+                if (result.data.code == 0) {
+                    vm.shareLink = result.data.data;
+                    console.log(vm.shareLink);
+                    const indexOfHash = window.location.href.indexOf('#');
+                    // 如果找到了 #，则截取字符串；否则，返回原始字符串
+                    vm.url = indexOfHash !== -1 ? window.location.href.substring(0, indexOfHash) : window.location.href;
+                    console.log(vm.url);
+                    vm.timestamp = (Date.now()).toString().substring(0, 10);
+                    vm.getSignature();
+                }
+            });
         },
 
         /**
@@ -807,7 +794,7 @@ export default {
     font-size: .28rem;
 }
 
-.v-select__selection--comma{
+.v-select__selection--comma {
     font-size: .28rem;
 }
 </style>

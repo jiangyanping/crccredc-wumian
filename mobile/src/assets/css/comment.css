@@ -193,8 +193,8 @@
   font-size: 0.3rem;
   line-height: 0.48rem;
   color: #464646;
-  margin-right:35px;
   text-align: justify; 
+  margin:.05rem 0;
 }
 .com-imgs {
   height: 1.5rem;

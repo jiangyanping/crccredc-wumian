@@ -6,8 +6,8 @@
             </div>
         </div>
         <div class="popup popup-com">
-            <div class="com-popup-con" :class="!showComPopupPost ? 'com-popup-con2' : ''">
-                <div class="com-popup-box" :class="!showComPopupPost ? 'com-popup-box2' : ''">
+            <div class="com-popup-con" :class="!isChangeComment ? 'com-popup-con2' : ''">
+                <div class="com-popup-box" :class="!isChangeComment ? 'com-popup-box2' : ''">
                     <div class="com-list" v-if="commentsData.length != 0">
                         <!-- let listArr = [
                             {
@@ -42,7 +42,7 @@
                                 <template>
                                     <div class="com-infor-wrap">
                                         <div class="com-a com-infor-con" @click.prevent="replyComment(item)">
-                                            <div class="com-top">
+                                            <div class="com-top" v-show="isChangeComment">
                                                 <!-- <span class="com-username">{{ item.createby }}</span> -->
                                                 <!-- <v-btn class="com-infor-btn com-delete mr-0" outlined color="red"
                                                     @click.stop="handleDeleteCom(item)">删除</v-btn>
@@ -95,10 +95,10 @@
                                                 <v-btn v-if="hasChild(it, item)" @click.stop="toggleChildComments(item)"
                                                     class="com-infor-btn pa-1" outlined color="teal">{{ item.active ?
                                                         "收起回复" : "展开回复" }}</v-btn>
-                                                <v-btn v-if="item.comState == '待' && item.pid == '0'"
+                                                <v-btn v-if="item.comState == '待' && item.pid == '0'" v-show="isChangeComment"
                                                     @click.stop="handlePassCom(item)" class="com-infor-btn pa-1" outlined
                                                     color="teal">通过确认</v-btn>
-                                                <span class="com-infor-reply">0</span>
+                                                <span class="com-infor-reply" v-show="isChangeComment">0</span>
                                                 <span v-if="item.viewAngle" class="comment-infor-viewpoint"
                                                     @click.stop="clickViewPointIcon(item)">6</span>
                                                 <span class="com-infor-date">{{ item.createat }}</span>
@@ -110,7 +110,7 @@
                                                     v-for="o in commentsDataC(it.comments, item)" :key="o.id">
                                                     <div class="com-child-inforwrap">
                                                         <div class="com-a com-child-inforcon" @click.stop="replyComment(o)">
-                                                            <div class="com-top">
+                                                            <div class="com-top" v-show="isChangeComment">
                                                                 <span class="com-username">{{ o.createby }}<span
                                                                         style="color:#999999">&nbsp;回复&nbsp;</span>{{
                                                                             o.comToName }}
@@ -169,7 +169,7 @@
                                                                     @click.stop="clickImg($event)" />
                                                             </div>
                                                             <div class="com-infor">
-                                                                <span class="com-infor-reply">0</span>
+                                                                <span class="com-infor-reply" v-show="isChangeComment">0</span>
                                                                 <span v-if="o.viewAngle" class="comment-infor-viewpoint"
                                                                     @click.stop="clickViewPointIcon(o)">6</span>
                                                                 <span class="com-infor-date">{{ o.createat }}</span>
@@ -186,7 +186,7 @@
                     </div>
                     <div class="noComments" v-else><span>待发布问题或记录！</span></div>
                 </div>
-                <div class="com-popup-post" v-show="showComPopupPost">
+                <div class="com-popup-post" v-show="isChangeComment">
                     <div class="com-popup-inputWrap" @click.stop.prevent="clickInp">点击这里发布新的问题或现场记录
                         <!-- <input @click.stop.prevent="clickInp" type="text" class="com-popup-input" name=""
                             placeholder="点击这里发布新的问题或现场记录"> -->
@@ -257,6 +257,7 @@ import API from "../request/api.js";
 import wx from 'weixin-js-sdk';
 import PhotoSwipe from 'photoswipe'
 import PhotoSwipeUI_Default from 'photoswipe/dist/photoswipe-ui-default'
+import weixinLogin from "../assets/js/weixinLogin.js";
 //import { v4 as uuidv4 } from 'uuid';
 export default {
 
@@ -265,7 +266,7 @@ export default {
         return {
             popupInpField: false,  //新增评论弹窗
             changePopUpInpField: false,   //修改评论弹窗
-            showComPopupPost: true, //home页的四个分层管控进到评论，只是查看，不能发表
+            isChangeComment: true, //home页的四个分层管控进到评论，只是查看，不能发表
 
             commentsData: [],  //当前要显示的数据
             dealCommentsData: [],  //后台请求回的数据，经过处理的
@@ -359,33 +360,25 @@ export default {
         }
 
         if (this.$route.params.controlPointSort == '00') {
-            this.showComPopupPost = false
+            this.isChangeComment = false
         }
 
-        this.weixinislogin();
+        this.weixinIsLogin();
     },
     methods: {
         /**
-         * 微信是否登录，获取用户信息
+         * 微信是否登录
          */
-        weixinislogin() {
-            let vm = this;
-            let key = localStorage.getItem('weixinkey');
-            if (key) {
-                API.weixinislogin({ key: key }).then(result => {
-                    if (result.data.code == 0 && result.data.data.realName) {
-                        vm.comParams.key = result.data.data.key;
-                        vm.comParams.createby = result.data.data.realName;
-                        let date = new Date();
-                        let year = date.getFullYear();
-                        let month = (date.getMonth() + 1).toString().padStart(2, '0');
-                        let day = date.getDate().toString().padStart(2, '0');
-                        vm.shareDesc = API.buildingName + '-' + year + '/' + month + '/' + day + '-' + result.data.data.realName + '导出';
-                        vm.handleQueryComs();
-                    }
-                });
-            } else {
-                this.$router.push('/home');  //评论页分享出去，如果localStorage里有key，则请求用户登录信息，否则跳转至home页。
+        async weixinIsLogin() {
+            let res = await weixinLogin.getWeixinKey();
+            if (res && res.realName) {
+                this.comParams.key = res.key;
+                let date = new Date();
+                let year = date.getFullYear();
+                let month = (date.getMonth() + 1).toString().padStart(2, '0');
+                let day = date.getDate().toString().padStart(2, '0');
+                this.shareDesc = API.buildingName + '-' + year + '/' + month + '/' + day + '-' + res.realName + '导出';
+                this.handleQueryComs(); //查询评论，处理，获取评论数量信息
             }
         },
 
@@ -488,23 +481,18 @@ export default {
         handleExportComments(item) {
             let vm = this;
             vm.shareWord = true;
-            let key = localStorage.getItem('weixinkey');
-            if (key) {
-                API.exportComments({ cIDs: item.id, key: key, louNum: '1' }).then(result => {
-                    if (result.data.code == 0) {
-                        vm.shareLink = result.data.data;
-                        console.log(vm.shareLink);
-                        const indexOfHash = window.location.href.indexOf('#');
-                        // 如果找到了 #，则截取字符串；否则，返回原始字符串
-                        vm.url = indexOfHash !== -1 ? window.location.href.substring(0, indexOfHash) : window.location.href;
-                        console.log(vm.url);
-                        vm.timestamp = (Date.now()).toString().substring(0, 10);
-                        vm.getSignature();
-                    }
-                });
-            } else {
-                this.$router.push('/home');  //评论页分享出去，如果localStorage里有key，则请求用户登录信息，否则跳转至home页。
-            }
+            API.exportComments({ cIDs: item.id, key: vm.comParams.key, louNum: API.louNum }).then(result => {
+                if (result.data.code == 0) {
+                    vm.shareLink = result.data.data;
+                    console.log(vm.shareLink);
+                    const indexOfHash = window.location.href.indexOf('#');
+                    // 如果找到了 #，则截取字符串；否则，返回原始字符串
+                    vm.url = indexOfHash !== -1 ? window.location.href.substring(0, indexOfHash) : window.location.href;
+                    console.log(vm.url);
+                    vm.timestamp = (Date.now()).toString().substring(0, 10);
+                    vm.getSignature();
+                }
+            });
         },
 
         /**
@@ -758,6 +746,7 @@ export default {
 
 
         replyComment(item) {
+            if(!this.isChangeComment) return;
             if (item.pid != 0) this.comParams.pid = item.pid
             else if (item.pid == 0) this.comParams.pid = item.id;
             this.comParams.comToName = item.createby;

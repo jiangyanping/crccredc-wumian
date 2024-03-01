@@ -20,10 +20,19 @@ export const API = {
         })
     },
 
-    //微信登录,添加真实姓名
+    //微信绑定,添加真实姓名
     addRealName: (query) => {
         return request({
             url: '/addRealName',
+            method: 'get',
+            params: query
+        })
+    },
+
+    //微信绑定,获取验证码
+    getCode: (query) => {
+        return request({
+            url: '/getCode',
             method: 'get',
             params: query
         })
@@ -146,5 +155,6 @@ export const API = {
     shareImgUrl: request.defaults.shareImgUrl,
     weixinLoginRedirectUrl: request.weixinLoginRedirectUrl,
     docTitle: request.docTitle,
+    louNum: request.louNum,
 };
 export default API;

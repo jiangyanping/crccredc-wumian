@@ -9,7 +9,12 @@
         </video>
         <div class="bottom-toolbar" id="otherResTool"></div>
         <div @click.stop="handleGoBack" class="goBack">
-            <svg t="1704783045457" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1291" width="64" height="64"><path d="M708.42516 957.314205c-13.715373 0-27.426653-5.215792-37.895075-15.678074L277.717627 548.823674c-20.925588-20.893866-20.925588-54.821583 0-75.747171L670.530085 80.225159c20.931728-20.925588 54.821583-20.925588 75.752288 0 20.925588 20.893866 20.925588 54.821583 0 75.747171L391.359874 510.934738l354.922499 354.915335c20.925588 20.931728 20.925588 54.821583 0 75.753311C735.852836 952.098413 722.135416 957.314205 708.42516 957.314205L708.42516 957.314205zM708.42516 957.314205" fill="#ffffff" p-id="1292"></path></svg>
+            <svg t="1704783045457" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                p-id="1291" width="64" height="64">
+                <path
+                    d="M708.42516 957.314205c-13.715373 0-27.426653-5.215792-37.895075-15.678074L277.717627 548.823674c-20.925588-20.893866-20.925588-54.821583 0-75.747171L670.530085 80.225159c20.931728-20.925588 54.821583-20.925588 75.752288 0 20.925588 20.893866 20.925588 54.821583 0 75.747171L391.359874 510.934738l354.922499 354.915335c20.925588 20.931728 20.925588 54.821583 0 75.753311C735.852836 952.098413 722.135416 957.314205 708.42516 957.314205L708.42516 957.314205zM708.42516 957.314205"
+                    fill="#ffffff" p-id="1292"></path>
+            </svg>
         </div>
     </div>
 </template>
@@ -34,6 +39,7 @@ import API from "../request/api.js";
 import Bus from "../assets/js/Bus";
 import { Base64 } from 'js-base64';
 import resourceData from "../data/resourcesData"
+import weixinLogin from "../assets/js/weixinLogin.js";
 
 export default {
     name: 'OtherRes',
@@ -44,18 +50,28 @@ export default {
         };
     },
     mounted() {
-        let vm = this;
-        for (let i = 0; i < vm.resourceData.length; i++) {
-            if (vm.resourceData[i].mark == this.$route.params.mark) {
-                for (let item of vm.resourceData[i].resource) {
-                    if (item.fid == this.$route.params.resFid) {
-                        this.loadOtherRes(item);
+        this.weixinIsLogin();
+    },
+    methods: {
+        /**
+         * 微信是否登录
+         */
+        async weixinIsLogin() {
+            let res = await weixinLogin.getWeixinKey();
+            if (res && res.realName) {
+                //微信登录且绑定账户，则加载对应资源
+                for (let i = 0; i < this.resourceData.length; i++) {
+                    if (this.resourceData[i].mark == this.$route.params.mark) {
+                        for (let item of this.resourceData[i].resource) {
+                            if (item.fid == this.$route.params.resFid) {
+                                this.loadOtherRes(item);
+                            }
+                        }
                     }
                 }
             }
-        }
-    },
-    methods: {
+        },
+
         loadOtherRes: function (item) {
             // let fileUrl = "https://crccredc-sofa.oss-cn-beijing.aliyuncs.com/" + item.url;
             // let onlinePreviewFileUrl = "https://back.sofa.rebim.cn:8445/onlinePreview?url=" + Base64.encode(fileUrl);
@@ -93,5 +109,4 @@ export default {
     top: 0.1rem;
     left: 0.7rem;
     z-index: 10002;
-}
-</style>
+}</style>

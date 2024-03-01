@@ -4,7 +4,7 @@
         <v-list v-if="resource.length != 0">
             <v-list-item
                 v-for="(item, index) in resource.filter(res => res.type != '3d' && res.type != 'rebim' && res.type != 'criteria')"
-                :key="index" @click="handleGoOtherRes(item.fid)" >
+                :key="index" @click="handleGoOtherRes(item.fid)">
                 <div class="line">"</div>
                 <v-list-item-avatar>
                     <!-- <div v-if="item.type == '3d' || item.type == 'rebim' || item.type == 'criteria'"
@@ -56,6 +56,7 @@ import './../assets/js/iconfont.js'
 import $ from "jquery";
 import Bus from "../assets/js/Bus";
 import resourceData from "../data/resourcesData"
+import weixinLogin from "../assets/js/weixinLogin.js";
 export default {
 
     name: 'Resource',
@@ -126,15 +127,6 @@ export default {
         search: function () {
             clearTimeout(this.timer); //清除延迟执行
         },
-        // res: {
-        //     immediate: true,
-        //     handler(newValue) {
-        //         if (newValue.show) {
-        //             document.title = this.documentTitle;
-        //         }
-        //     },
-        //     deep: true
-        // },
     },
     created: function () {
         // this.getQid();
@@ -143,22 +135,32 @@ export default {
     },
     mounted() {
         this.mark = this.$route.params.mark;
-        for (let item of resourceData) {
-            if (this.mark == item.mark) {
-                this.resource = item.resource;
-                document.title = item.name;
-                //改变title
-                for (let it of this.control) {
-                    if (this.$route.params.view == it.controlSort) {
-                        document.title = it.controlName + '检查-' + item.name;
-                    }
-                }
-            }
-        }
-
-
+        this.weixinIsLogin();
     },
     methods: {
+        /**
+         * 微信是否登录
+         */
+        async weixinIsLogin() {
+            let res = await weixinLogin.getWeixinKey();
+            if (res && res.realName) {
+                //微信登录后可以显示内容
+                for (let item of resourceData) {
+                    if (this.mark == item.mark) {
+                        this.resource = item.resource;
+                        document.title = API.docTitle + '-' + item.name;
+                        //改变title
+                        for (let it of this.control) {
+                            if (this.$route.params.view == it.controlSort) {
+                                document.title = API.docTitle + '-' + it.controlName + '检查-' + item.name;
+                            }
+                        }
+                    }
+                }
+
+            }
+        },
+
         getQid: function () {
             //TODO 为了本地演示所以调整开始
             var qid1 = '';
@@ -274,7 +276,7 @@ export default {
 
         },
         handleGoOtherRes(fid) {
-            this.$router.push('/OtherRes/' + this.$route.params.view + '/' + this.$route.params.mark + '/' + fid);
+            this.$router.push('/otherRes/' + this.$route.params.view + '/' + this.$route.params.mark + '/' + fid);
         },
         handleGoBack: function () {
             if (this.$route.params.view == 'ho') this.$router.push('/Home');
@@ -352,7 +354,7 @@ export default {
     opacity: 1;
 }
 
-.v-list-item--link:before{
+.v-list-item--link:before {
     background-color: transparent;
 }
 

@@ -8,6 +8,7 @@ import Engine from '../views/Engine.vue'
 import OtherRes from '../views/OtherRes.vue'
 import ExportComments from '../views/ExportComments.vue'
 import ShareWordLink from '../views/ShareWordLink.vue'
+import WeixinBind from '../views/WeixinBind.vue'
 
 Vue.use(VueRouter);
 
@@ -61,6 +62,11 @@ const routes = [
     path: '/shareWordLink/:wordLink',
     name: 'ShareWordLink',
     component: ShareWordLink
+  },
+  {
+    path: '/weixinBind',
+    name: 'WeixinBind',
+    component: WeixinBind
   },
 ]
 

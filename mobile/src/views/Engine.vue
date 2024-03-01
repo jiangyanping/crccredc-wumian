@@ -30,6 +30,7 @@ import loadModel from './../assets/js/loadModel.js'
 import AttrsApp from './../components/funModules/AttrsApp'
 import OperationalModel from "./../components/operationalModel/OperationalModel";
 import modelData from "../data/modelData"
+import weixinLogin from "../assets/js/weixinLogin.js";
 
 export default {
     name: 'Engine',
@@ -58,16 +59,29 @@ export default {
         },
     },
     mounted() {
-        let vm = this;
-        for (let i = 0; i < vm.modelData.length; i++) {
-            if (vm.modelData[i].controlSort == this.$route.params.controlSort) {
-                vm.showModelFile = vm.modelData[i];
-                this.loadModel(vm.showModelFile);
-            }
-        }
         document.title = API.docTitle + '-查看模型';
+        this.weixinIsLogin();
     },
     methods: {
+        /**
+         * 微信是否登录
+         */
+        async weixinIsLogin() {
+            let res = await weixinLogin.getWeixinKey();
+            if (res && res.realName) {
+                //微信登录且绑定账户，则加载对应模型
+                for (let i = 0; i < this.modelData.length; i++) {
+                    if (this.modelData[i].controlSort == this.$route.params.controlSort) {
+                        this.showModelFile = this.modelData[i];
+                        this.loadModel(this.showModelFile);
+                    }
+                }
+            }
+        },
+
+        /**
+         * 加载模型
+         */
         loadModel: function (item) {
             let vm = this;
             $("#showAttrs-btn").appendTo($(".add-tool-btns"));
