@@ -15,11 +15,17 @@
                 <img :src="require('./../assets/img/showAtrrs.png')" title="显示属性" @click.prevent="clickAttrsBtn()">
                 <span class="btnTip">属性</span>
             </div>
+            <div id="showViewports-btn" class="tool-btn" :class="{ 'bf-checked': viewports.show }">
+                <img :src="require('./../assets/img/showViewports.png')" title="显示视点" @click.prevent="clickViewportsBtn()">
+                <span class="btnTip">视点</span>
+            </div>
         </div>
         <!--    控制模型构件显隐组件-->
         <OperationalModel :engineItem="showModelFile" :showMeasureGro="showMeasureGro" @hideAttrsApp="hideAttrsApp">
         </OperationalModel>
         <AttrsApp :attrsApp="attrsApp" />
+        <ViewPorts :viewports="viewports" />
+
     </div>
 </template>
 
@@ -28,6 +34,7 @@ import API from "../request/api.js";
 import $ from 'jquery'
 import loadModel from './../assets/js/loadModel.js'
 import AttrsApp from './../components/funModules/AttrsApp'
+import ViewPorts from './../components/funModules/ViewPorts'
 import OperationalModel from "./../components/operationalModel/OperationalModel";
 import modelData from "../data/modelData"
 import weixinLogin from "../assets/js/weixinLogin.js";
@@ -37,7 +44,8 @@ export default {
     props: ['engine', 'commentBtn'],
     components: {
         AttrsApp,
-        OperationalModel
+        OperationalModel,
+        ViewPorts,
     },
     data: function () {
         return {
@@ -46,6 +54,9 @@ export default {
                 show: false,
                 uid: '',
                 fid: '',
+            },
+            viewports: {
+                show: false,
             },
             timer: null,
             showMeasureGro: true,
@@ -85,6 +96,7 @@ export default {
         loadModel: function (item) {
             let vm = this;
             $("#showAttrs-btn").appendTo($(".add-tool-btns"));
+            $("#showViewports-btn").appendTo($(".add-tool-btns"));
             $("#container").empty();
             let boundaryArr = [];
             if (item.modelrange != '' && item.modelrange != "null" && item.modelrange != undefined && item.modelrange != 'undefined') {
@@ -102,11 +114,11 @@ export default {
                 var min2 = new window.THREE.Vector3(Number(boundaryArr[3]) - 0.01, Number(boundaryArr[4]) - 0.01, Number(boundaryArr[5]) - 0.01);
             }
             let url = '';
-            if (item.type == "3d" || item.type == "rebim") {
-                url = API.baseModelURL + item.url + "model.zip";
-            } else if (item.type == "criteria") {
-                url = API.baseModelURL + "uploads/" + item.url;
-            }
+            // if (item.type == "3d" || item.type == "rebim") {
+            //     url = API.baseModelURL + item.url + "model.zip";
+            // } else if (item.type == "criteria") {
+            //     url = API.baseModelURL + "uploads/" + item.url;
+            // }
             loadModel(vm, url, item, boundaryArr, max2, min2);
             setTimeout(function () {
                 $('.bottom-toolbar').css("background", "rgba(17, 17, 17, 0.4)")
@@ -115,12 +127,17 @@ export default {
                 for (var i = 0; i < toolArr.length; i++) {
                     if ($(toolArr[i]).children('#clipMobile-btns').length > 0) {
                         $("#showAttrs-btn").prependTo($(toolArr[i]));
+                        $("#showViewports-btn").appendTo($(toolArr[i]));
                         $('.bottom-toolbar .tool-btn').css("border-bottom", "none")
                         return;
                     }
                 }
             }, 300);
         },
+
+        /**
+         * 单击属性按钮
+         */
         clickAttrsBtn: function () {
             this.attrsApp.show = !this.attrsApp.show;
             if (this.attrsApp.show) {
@@ -128,6 +145,14 @@ export default {
             }
 
         },
+
+        /**
+         * 单击视口按钮
+         */
+        clickViewportsBtn(){
+            this.viewports.show = !this.viewports.show;
+        },
+
         cancelAnimation() {
             $("#showDownId").css("animation", "none")
             $("#notUsedId").css("animation", "none")
