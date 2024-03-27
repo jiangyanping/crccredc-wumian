@@ -1,0 +1,518 @@
+.comment {
+  position: relative;
+  background-color: #fff;
+}
+.comment-mask {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10001;
+  /* display: none; */
+}
+.mask-inpField {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 10003;
+}
+.mask-mail {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 10003;
+  /* display: none; */
+}
+.comment .popup {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  /* display: none; */
+}
+.popup-com {
+  z-index: 10002;
+  height: 100%;
+}
+.popup-inpField {
+  z-index: 10004;
+  background-color: #fff;
+}
+.popup-title {
+  position: relative;
+  font-size: 0.32rem;
+  color: #fff;
+  text-align: center;
+  line-height: 1rem;
+  font-weight: 700;
+  border-bottom: 1px solid #dadada;
+}
+
+.popup-close {
+  display: inline-block;
+  position: absolute;
+  top: -1rem;
+  right: 0;
+  padding: 0 0.3rem;
+  transition: all 0.3s ease;
+  transform: translateY(100%);
+  font-weight: bold;
+  color: #7b7b7b;
+  z-index: 10006;
+}
+.com-popup-con {
+  position: relative;
+  height: calc(100% - 0.6rem);
+}
+.com-popup-con h1 {
+  font-size: 0.3rem;
+  height: 0.7rem;
+  padding: 0 0.3rem;
+  line-height: 0.7rem;
+  color: #929292;
+  font-weight: bold;
+  margin: 0;
+  text-align: left;
+}
+.com-popup-con .com-popup-box {
+  -webkit-overflow-scrolling: touch;
+  height: calc(100% - 0.8rem);
+  overflow: auto;
+  /* border: 4px solid blue; */
+}
+.noComments {
+  width: 100%;
+  height: 100%;
+  font-size: 0.34rem;
+  display: table;
+}
+
+.noComments span {
+  display: table-cell;
+  vertical-align: middle;
+}
+.com-li {
+  border-bottom: 1px solid #dadada;
+  font-size: 0;
+}
+.com-li-header {
+  width: 100%;
+  height: 0.8rem;
+  line-height: 0.8rem;
+  display: flex;
+  background-color: #0066cc;
+  color: #fff;
+  font-size: 0.28rem;
+  font-weight: bold;
+}
+.com-li-header-num {
+  width: 30%;
+  text-align: right;
+  padding-right: 0.3rem;
+}
+.com-li-header-name {
+  flex: 1;
+  text-align: left;
+  padding-left: 0.3rem;
+}
+.com-li-title {
+  width: 100%;
+  height: 0.7rem;
+  line-height: 0.7rem;
+  display: flex;
+  background-color: #d4d4d4;
+  color: #000;
+  font-size: 0.27rem;
+  font-weight: bold;
+}
+.com-li-title-state {
+  width: 30%;
+  text-align: right;
+  padding-right: 0.3rem;
+}
+.com-li-title-name {
+  flex: 1;
+  text-align: left;
+  padding-left: 0.3rem;
+}
+.com-li:last-child {
+  border-bottom: none;
+}
+.com-li .com-infor-wrap,
+.com-child-li .com-child-inforwrap {
+  display: inline-block;
+  width: 100%;
+  padding-left: 0.3rem;
+}
+.com-child-li .com-child-inforwrap {
+  width: calc(100% - 0.5rem);
+  padding-left: 0.5rem;
+}
+.com-li .com-infor-con {
+  padding: 0.16rem 0.3rem 0.08rem 0;
+  text-align: left;
+}
+.borderT {
+  border-top: 1px solid #dadada;
+}
+
+.com-child {
+  display: none;
+  border-top: 1px solid #dadada;
+}
+.com-child-li .com-child-inforcon {
+  border-bottom: 1px solid #dadada;
+  padding: 0.16rem 0.3rem 0.08rem 0;
+  text-align: left;
+}
+.com-child-li:last-child .com-child-inforcon {
+  border-bottom: none;
+}
+.com-username {
+  color: #171717;
+  /* color: #000; */
+  font-weight: bold;
+  font-size: 0.3rem;
+  line-height: 28px;
+}
+.com-username span {
+  font-weight: normal;
+}
+.com-text {
+  font-size: 0.3rem;
+  line-height: 0.48rem;
+  color: #464646;
+  text-align: justify; 
+  margin:.05rem 0;
+}
+.com-imgs {
+  height: 1.5rem;
+  width: 1.5rem;
+  overflow: hidden;
+  margin-top: 0.1rem;
+  /* padding-bottom: 1.5rem; */
+  position: relative;
+}
+.com-imgs .com-imgs-li {
+  width: 100%;
+}
+.com-infor {
+  height: 0.7rem;
+  line-height: 0.7rem;
+  color: #939393;
+  font-size: 0.28rem;
+  margin: 0.15rem 0;
+  margin-right: -0.1rem;
+}
+.com-child .com-infor {
+  height: 0.5rem;
+  line-height: 0.5rem;
+}
+
+.com-infor span {
+  display: inline-block;
+}
+
+.com-infor-btn {
+  font-size: 0.28rem !important;
+  height: 0.6rem !important;
+  line-height: 0.6rem !important;
+  margin-right: 12px;
+}
+
+.com-delete,
+.com-change,
+.com-export {
+  float: right;
+  width: .68rem;
+  height: .64rem!important;
+  line-height: 0.5rem !important;
+  margin-right: 0;
+  padding:4px;
+}
+.com-change{
+    width: .76rem;
+    padding-left:10px;
+}
+.com-delete{
+    width: .54rem;
+    padding-right:0;
+}
+.com-export{
+  width: .58rem;
+}
+.com-delete svg,
+.com-change svg,
+.com-export svg{
+    width: 100%;
+    height: 100%;
+}
+
+/* .v-application .com-infor-btn a {
+  color: #009688 !important;
+} */
+.com-infor .com-more,
+.com-infor .com-more:hover {
+  /* color: #007bff !important; */
+  color: #2837b6 !important;
+  display: inline-block;
+  margin-right: 0.3rem;
+  vertical-align: top;
+}
+.com-infor span.com-infor-date {
+  float: right;
+  margin: 0 0.1rem;
+  line-height: 0.6rem;
+  height: 0.6rem;
+}
+
+.com-infor span.com-infor-reply {
+  float: right;
+  background: url("../img/commentIcon.png") no-repeat center;
+  background-size: 0.4rem 0.4rem;
+  width: 0.6rem;
+  line-height: 0.6rem;
+  color: #fff;
+  font-size: 0;
+}
+.com-infor span.comment-infor-viewpoint {
+  float: right;
+  background: url("../img/viewPoint.png") no-repeat center;
+  background-size: 0.4rem 0.4rem;
+  width: 0.6rem;
+  line-height: 0.6rem;
+  color: #fff;
+  font-size: 0;
+}
+.com-infor span.com-comToRes {
+  color: #939393;
+  max-width: 3rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.com-popup-post {
+  height: 0.5rem;
+  padding: 0 0.3rem;
+  font-size: 0.32rem;
+  line-height: 0.5rem;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  border-top: 1px solid #dadada;
+  text-align: left;
+}
+.com-popup-post div {
+  display: inline-block;
+}
+.com-popup-post .com-popup-inputWrap {
+  width: 100%;
+  /* width: 4.6rem; */
+  /* padding: .2rem .3rem; */
+  height: 1.1rem;
+  line-height: 1.1rem;
+  text-align: center;
+}
+.com-popup-post .com-popup-input {
+  width: 100%;
+  height: 0.6rem;
+  line-height: 0.6rem;
+  margin: 0.25rem 0;
+  vertical-align: top;
+  padding: 0;
+  border: 0;
+  font-size: 0.32rem;
+  text-align: center;
+}
+.com-popup-post .com-popup-postbtn {
+  float: right;
+  color: #0066cc;
+}
+/* 没有评论时-开始 */
+.no-com h1 {
+  background-color: #fff;
+}
+.no-com .com-popup-box {
+  background: url("../img/nocomment.png") no-repeat center 40%;
+  background-size: 2rem 2rem;
+}
+.no-com .com-popup-box p {
+  color: #c5c5c5;
+  font-size: 0.32rem;
+  text-align: center;
+  margin-top: 5.5rem;
+}
+/* 没有评论时-结束 */
+
+/* 键盘上方的文字输入域-开始 */
+.com-person {
+}
+.com-person {
+  line-height: 0.8rem;
+  color: #7f7f7f;
+  font-size: 0.3rem;
+}
+.com-person .com-person-name {
+  color: #7f7f7f;
+  font-weight: bold;
+}
+.com-post-wrap {
+  padding: 0 0.3rem;
+  font-size: 0;
+  text-align: left;
+}
+.com-post-textarea {
+  width: 99%;
+  line-height: 0.5rem;
+  min-height: 1.5rem;
+  border: 1px solid #dadada;
+  outline: none;
+  -webkit-appearance: none;
+  font-size: 0.3rem;
+}
+.com-post-box {
+  margin: 0.1rem 0 0.15rem 0;
+}
+.com-post-box > div {
+  display: inline-block;
+  vertical-align: middle;
+}
+.com-post-img {
+  position: relative;
+  width: 0.5rem;
+  height: 0.5rem;
+}
+#img_input {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  opacity: 0;
+  background-color: #fff;
+}
+.com-post-img img {
+  width: 100%;
+  height: 100%;
+}
+.com-image-box {
+  height: 0;
+  width: 1.5rem;
+  overflow: hidden;
+  margin: 0.1rem 0;
+  padding-bottom: 1.5rem;
+  position: relative; /*
+    display: none; */
+}
+.com-image-box .preview {
+  width: 100%;
+}
+.com-image-box .delImg {
+  display: inline-block;
+  background: url("../img/deleteImg.png") no-repeat 0rem 0rem;
+  background-size: 0.4rem 0.4rem;
+  position: absolute;
+  left: 0.05rem;
+  top: 0.05rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  background-color: #fff;
+  border-radius: 50%;
+}
+.com-post-viewpoint {
+  margin-left: 0.5rem;
+}
+.com-post-viewpoint label {
+  margin-bottom: 0;
+  font-size: 0.3rem;
+}
+.com-post-viewpoint input#isViewPoint {
+  width: 0.3rem;
+  height: 0.3rem;
+  margin-right: 0.1rem;
+}
+.com-post-btn {
+  color: #0066cc;
+  float: right;
+  font-size: 0.32rem;
+  padding: 0 10px;
+}
+/* 键盘上方的文字输入域-结束 */
+
+/*输入邮箱-开始*/
+.popup-mail {
+  z-index: 10005;
+  height: 35%;
+}
+.com-mail-wrap,
+.com-mail-tip,
+.com-mail-tip2 {
+  padding: 0.6rem 0.3rem;
+  font-size: 0;
+}
+.com-mail-tip,
+.com-mail-tip2 {
+  /* display: none; */
+}
+.com-mail-lable {
+  line-height: 0.5rem;
+  color: #7f7f7f;
+  font-size: 0.3rem;
+  margin-bottom: 0.3rem;
+  text-align: center;
+}
+#mail {
+  width: calc(100% - 0.4rem);
+  border: 1px solid #dadada;
+  height: 0.6rem;
+  line-height: 0.6rem;
+  font-size: 0.3rem;
+  padding: 0.2rem;
+  outline: none;
+}
+.com-mail-box,
+.com-mail-tipbox {
+  margin: 0.1rem 0 0.15rem 0;
+}
+.com-mail-box > div,
+.com-mail-tipbox > div {
+  display: inline-block;
+}
+#mailbutton,
+#mailtipButton {
+  float: right;
+  font-size: 0.32rem;
+  color: #568491;
+  padding: 0 0.2rem;
+}
+.com-mail-tiptext {
+  font-size: 0.3rem;
+}
+
+.goBack {
+  position: fixed;
+  top: 0.1rem;
+  left: 0.2rem;
+  z-index: 10002;
+}
+
+.goBack svg {
+  background: rgba(0, 0, 0, 0.6);
+  width: .54rem;
+  height: .54rem;
+  border-radius: 50%;
+  padding: 5px;
+}
+/*输入邮箱-结束*/
