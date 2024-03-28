@@ -1,0 +1,1034 @@
+* {
+    outline: none;
+    box-sizing: border-box;
+}
+
+/* canvas的大小控制 */
+div {
+    padding: 0px;
+    margin: 0px;
+}
+
+body {
+    font-family: "microsoft yahei", "\5FAE\8F6F\96C5\9ED1", "宋体";
+    margin: 0;
+    font-size: 14px;
+    overflow: hidden;
+}
+
+#container {
+    display: inline-block;
+    position: relative;
+    /* Safari 3D transform变换异常，在非body父级加overflow: hidden; 可以解决 */
+    overflow: hidden;
+}
+
+
+/* 工具条 */
+.bottom-toolbar {
+    text-align: center;
+    position: absolute;
+    z-index: 10;
+    color: #fff;
+    background: rgba(17, 17, 17, 0.88);
+    font-size: 0.25rem;
+    display: -webkit-flex;
+    display: flex;
+    left: 50%;
+    transform: translate(-50%, 0);
+    bottom: 20px;
+    top: auto;
+}
+
+.bottom-toolbar .tool-btn {
+    opacity: .7;
+    width: 1.8em;
+    height: 2em;
+    line-height: 1em;
+    vertical-align: middle;
+    color: #fff;
+    padding: 0.4em;
+    cursor: pointer;
+    position: relative;
+    border-bottom: 4px solid #333;
+    font-weight: 100;
+}
+
+.bottom-toolbar .tool-btn:hover {
+    opacity: 1;
+}
+
+.bottom-toolbar .tool-btn>img {
+    -webkit-filter: grayscale(100%);
+    -o-filter: grayscale(100%);
+    -moz-filter: grayscale(100%);
+    -ms-filter: grayscale(100%);
+    filter: grayscale(100%);
+    width: 100%;
+    height: 100%;
+    vertical-align: top;
+}
+
+.bottom-toolbar .tool-btn.bf-checked {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-bottom: 4px solid #568491;
+    opacity: 1;
+}
+
+#clipMobile-btns .tool-btn {
+    font-weight: 300;
+}
+
+.bottom-toolbar .tool-btn .popup {
+    position: absolute;
+    top: -2em;
+    z-index: 11;
+    left: 50%;
+    transform: translate(-50%, 0);
+    background: rgba(17, 17, 17, 0.88);
+    opacity: 1;
+    display: flex;
+    border-bottom: 1px solid #fff;
+}
+
+.bottom-toolbar .tool-btn .btnTip {
+    display: none;
+}
+
+/* 加载前的等待图标 */
+.loading-icon {
+    display: inline-block;
+    position: absolute;
+    width: .5rem;
+    height: .5rem;
+    top: 50%;
+    left: 50%;
+    margin-top: -.25rem;
+    margin-left: -.25rem;
+}
+
+@media (max-width: 750px),
+(max-height: 750px) {
+    .bottom-toolbar {
+        font-size: .5rem;
+        bottom: .6rem;
+    }
+
+    .bottom-toolbar .tool-btn {
+        opacity: 1;
+    }
+
+    .bottom-toolbar .tool-btn>img {
+        opacity: 1;
+        filter: alpha(opacity=100);
+    }
+
+    .bottom-toolbar .tool-btn .btnTip {
+        display: inline-block;
+        font-size: .24rem;
+        position: absolute;
+        top: 4em;
+        width: 4em;
+        left: 50%;
+        color: #000;
+        transform: translate(-50%, 0%);
+        font-weight: normal;
+    }
+
+    .bottom-toolbar .tool-btn .popup .btnTip {
+        display: none;
+    }
+
+    /* 加载前的等待图标 */
+    .loading-icon {
+        width: .7rem;
+        height: .7rem;
+    }
+
+    /* 竖屏，横竖屏转换时用 */
+    @media (orientation: portrait) {
+        .bottom-toolbar .tool-btn .popup {
+            display: flex;
+        }
+    }
+
+    /* 横屏 */
+    @media (orientation:landscape) {
+        .bottom-toolbar {
+            display: block;
+            left: 10px;
+            top: 50%;
+            bottom: auto;
+            -ms-transform: translate(0, -50%);
+            transform: translate(0, -50%);
+        }
+
+        .bottom-toolbar .tool-btn .popup {
+            border-left: 1px solid #fff;
+            border-bottom: 0px;
+            left: 100%;
+            top: 50%;
+            -ms-transform: translate(0, -50%);
+            transform: translate(0, -50%);
+            display: block;
+        }
+
+        .bottom-toolbar .tool-btn .btnTip {
+            display: none !important;
+        }
+
+        #cam-btns .popup {
+            top: 25%;
+        }
+    }
+}
+
+.btn-activated {
+    background-color: rgba(86, 132, 145, 1);
+    /* 00d3c4 rgba(0, 211, 196, 1)*/
+    border-bottom: 4px solid #568491 !important;
+}
+
+/* 进度条开始 */
+.load-bar {
+    width: 100%;
+    height: 4px;
+    border-radius: 30px;
+    background: #dfdfdf;
+    position: absolute;
+    top: 0px;
+    z-index: 10;
+}
+
+.load-bar:hover .load-bar-inner,
+.load-bar:hover #counter {
+    animation-play-state: paused;
+    -moz-animation-play-state: paused;
+    -o-animation-play-state: paused;
+    -webkit-animation-play-state: paused;
+}
+
+.load-bar-inner {
+    height: 99%;
+    width: 0%;
+    border-radius: inherit;
+    position: absolute;
+    background: #c2d7ac;
+    /* background: linear-gradient(to right, #c6efec, #7be5dd, #50ded4, #00d3c4, #01c5b6, #05a494);
+    background: -moz-linear-gradient(to right, #c6efec, #7be5dd, #50ded4, #00d3c4, #01c5b6, #05a494);
+    background: -webkit-linear-gradient(to right, #c6efec, #7be5dd, #50ded4, #00d3c4, #01c5b6, #05a494);
+    background: -o-linear-gradient(to right, #c6efec, #7be5dd, #50ded4, #00d3c4, #01c5b6, #05a494); */
+    background: linear-gradient(to right, #FFFFFF, #dbe5e8, #a9c0c7, #789da7, #568491);
+    background: -moz-linear-gradient(to right, #FFFFFF, #dbe5e8, #a9c0c7, #789da7, #568491);
+    background: -webkit-linear-gradient(to right, #FFFFFF, #dbe5e8, #a9c0c7, #789da7, #568491);
+    background: -o-linear-gradient(to right, #FFFFFF, #dbe5e8, #a9c0c7, #789da7, #568491);
+    font-weight: bold;
+    text-indent: 15px;
+    /* font-size: 14px; */
+    animation: loader linear;
+    -moz-animation: loader linear;
+    -webkit-animation: loader linear;
+    -o-animation: loader linear;
+}
+
+/* .load-bar-text{
+    position: absolute;
+    font-size: 14px;
+    height: 30px;
+    line-height: 30px;
+    color: #000000;
+    left: 50%;
+    transform: translate(-50%, 0);
+} */
+
+@keyframes loader {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+@-moz-keyframes loader {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+@-webkit-keyframes loader {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+@-o-keyframes loader {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+@keyframes counter {
+    from {
+        left: -25px;
+    }
+
+    to {
+        left: 323px;
+    }
+}
+
+@-moz-keyframes counter {
+    from {
+        left: -25px;
+    }
+
+    to {
+        left: 323px;
+    }
+}
+
+@-webkit-keyframes counter {
+    from {
+        left: -25px;
+    }
+
+    to {
+        left: 323px;
+    }
+}
+
+@-o-keyframes counter {
+    from {
+        left: -25px;
+    }
+
+    to {
+        left: 323px;
+    }
+}
+
+@keyframes loader {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+/* 进度条结束 */
+
+/* 右键菜单开始 */
+#context-menu {
+    opacity: 0.8;
+    width: 100px;
+    /* height: 52px; */
+    overflow: hidden;
+    box-shadow: 0 1px 1px #888, 2px 0 1px #ccc;
+    position: absolute;
+    /* visibility: hidden; */
+    background-color: #fff;
+    z-index: 100;
+}
+
+.context-menu {
+    height: 25px;
+    line-height: 25px;
+    padding: 0 10px;
+    font-size: 14px;
+    cursor: pointer;
+
+}
+
+.context-menu:hover {
+    border-top: 1px solid #568491;
+    border-bottom: 1px solid #568491;
+    background-color: rgba(0, 211, 196, 0.1);
+}
+
+/* 右键菜单结束 */
+
+/* 灯光设置弹出框开始 */
+.docking-panel {
+    position: absolute;
+    z-index: 1;
+    font-size: 14px;
+    width: 300px;
+    /* height: 250px; */
+    resize: both;
+    min-width: 320px;
+    min-height: 100px;
+    max-width: 640px !important;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    background: rgba(34, 34, 34, .8);
+    border-radius: 5px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, .5);
+    border: 1px solid transparent;
+    transition-property: background, box-shadow, border;
+    transition-duration: .2s;
+    transition-timing-function: ease;
+    transition-delay: .5s;
+}
+
+.light-setting {
+    resize: none;
+    display: block;
+    top: 179px;
+    width: 350px;
+    left: 50px;
+    color: rgb(255, 255, 255);
+    max-height: 702px;
+    max-width: 396px;
+    font-size: 12px;
+    display: none;
+}
+
+.docking-panel-title {
+    text-transform: uppercase;
+    color: #fff;
+    font-size: 14px;
+    line-height: 14px;
+    background: rgba(44, 45, 46, .8);
+    padding: 10px;
+    padding-right: 30px;
+    resize: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.docking-panel-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 5px 10px 5px 0;
+    text-transform: uppercase;
+    font-size: 14px;
+    line-height: 24px;
+    color: #ffffff;
+    /* opacity: .8; */
+    cursor: pointer;
+}
+
+.docking-panel-scroll {
+    overflow-x: hidden;
+    overflow-y: auto;
+    /* width: 100%; */
+    /* height: 100%; */
+    resize: none;
+    position: relative;
+    /* height: calc(100% - 33px); */
+    /* background-color: rgba(0, 0, 0, 0.5); */
+    padding: 20px 10px 0;
+}
+
+.light-box {
+    border: 1px solid #999999;
+    position: relative;
+    padding: 10px 0;
+    margin-bottom: 20px;
+}
+
+.light-title {
+    display: inline-block;
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    padding: 0 10px;
+    background-color: #464848;
+}
+
+.light-attrs {
+    line-height: 30px;
+}
+
+.light-attrs div {
+    display: inline-block;
+    line-height: 24px;
+    vertical-align: top;
+}
+
+.light-attrs-name {
+    width: 35%;
+    text-align: right;
+}
+
+.light-attrs-vlaue {
+    width: 60%;
+    margin-left: 10px;
+}
+
+.light-box .light-attrs-vlaue input {
+    width: 55%;
+}
+
+.light-box .light-attrs-vlaue range-slider {
+    float: left;
+    margin-right: 8px;
+}
+
+.light-box .light-attrs-vlaue output {
+    float: left;
+    color: #568491;
+}
+
+.light-direction-position range-slider {
+    padding-left: 5px;
+    width: 70%
+}
+
+.light-direction-position span {
+    float: left;
+}
+
+
+/* 灯光设置弹出框结束 */
+
+/* 水平滑块开始 */
+range-slider {
+    --element-height: 24px;
+    --track-height: 4px;
+    --thumb-size: 14px;
+
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: var(--element-height);
+    width: 78%;
+    min-width: 130px;
+    overflow: visible;
+    cursor: pointer;
+
+    /* Without this prop capture pointer events will not work on touch devices */
+    touch-action: none;
+}
+
+range-slider:focus {
+    outline: 0;
+}
+
+range-slider[disabled] {
+    filter: grayscale(1);
+    opacity: 0.8;
+}
+
+/* Track */
+range-slider::before {
+    content: "";
+    display: block;
+    width: 100%;
+    height: var(--track-height);
+    border-radius: calc(var(--track-height) / 2);
+    background: linear-gradient(#568491, #568491) 0/ var(--value-percent, 0%) 100% no-repeat #ffffff;
+}
+
+range-slider:focus .thumb {
+    box-shadow: 0 0 0 0.3em rgba(0, 211, 196, .2);
+}
+
+range-slider:hover .thumb {
+    box-shadow: 0 0 0 0.3em rgba(0, 211, 196, .2);
+}
+
+/* range-slider.touch-active .thumb-wrapper .thumb {
+  box-shadow: none;
+  transform: scale(1.5);
+} */
+
+.thumb {
+    background: #568491;
+    border-radius: 50%;
+    width: var(--thumb-size);
+    height: var(--thumb-size);
+    position: absolute;
+    bottom: calc(var(--element-height) / 2 - var(--thumb-size) / 2);
+    left: var(--value-percent, 0%);
+    margin-left: calc(var(--thumb-size) / 2 * -1);
+    transition: transform 200ms ease;
+    will-change: transform;
+    pointer-events: none;
+}
+
+.thumb-wrapper {
+    position: absolute;
+    left: calc(var(--thumb-size) / 2);
+    right: calc(var(--thumb-size) / 2);
+    bottom: 0;
+    height: 0;
+    overflow: visible;
+}
+
+/* 水平滑块结束 */
+
+
+/* noUiSlider,剖切css变化开始 */
+#clipSlide {
+    position: absolute;
+    top: 55%;
+    -ms-transform: translate(0, -50%);
+    transform: translate(0, -50%);
+    right: .5rem;
+    height: 50%;
+}
+
+@media (max-width: 750px),
+(max-height: 750px) {
+
+    /* 竖屏 */
+    @media (orientation: portrait) {
+        #clipSlide {
+            top: 50%;
+            height: 42%;
+            right: .7rem;
+        }
+    }
+
+    /* 横屏 */
+    @media (orientation:landscape) {
+        #clipSlide {
+            top: 62%;
+            height: 40%;
+            right: .75rem;
+        }
+    }
+}
+
+#clipSlide .noUi-vertical {
+    width: .2rem;
+}
+
+#clipSlide .noUi-vertical .noUi-origin {
+    top: 0 !important;
+}
+
+#clipSlide .noUi-vertical .noUi-handle {
+    width: .56rem;
+    height: .68rem;
+    right: -.2rem;
+    top: -.34rem;
+    outline: none;
+}
+
+#clipSlide .noUi-connect {
+    background-color: #568491;
+}
+
+#clipSlide-xhandles,
+#clipSlide-yhandles,
+#clipSlide-zhandles {
+    height: 100%;
+}
+
+#clipSlide .noUi-vertical .noUi-tooltip {
+    -webkit-transform: translate(50%, 0);
+    transform: translate(50%, 0);
+    top: -140%;
+    right: 50%;
+}
+
+#clipSlide .noUi-handle-lower .noUi-tooltip {
+    top: 140%;
+}
+
+.noUi-tooltip {
+    border: none;
+    background: none;
+    font-size: .34rem;
+}
+
+#clipSlide .noUi-vertical .noUi-handle:before,
+#clipSlide .noUi-vertical .noUi-handle:after {
+    width: 50%;
+    height: 2px;
+    left: 25%;
+    top: 40%;
+}
+
+#clipSlide .noUi-vertical .noUi-handle:after {
+    top: 50%;
+}
+
+/* noUiSlider,剖切css变化结束 */
+
+/* viewCube开始 */
+#vc-wrap {
+    font-size: .3rem;
+    position: absolute;
+    top: .55rem;
+    right: .35rem;
+}
+
+@media (max-width: 750px),
+(max-height: 750px) {
+    #vc-wrap {
+        font-size: .4rem;
+        position: absolute;
+        top: .8rem;
+        right: .47rem;
+    }
+}
+
+.cube {
+    background: rgba(220, 220, 220, 0.9);
+    border: 1px solid rgba(58, 71, 114, 0.5);
+    color: #878b8f;
+}
+
+/* viewCube结束 */
+/* 屏幕分辨率放大为 150 */
+/* @media (-webkit-min-device-pixel-ratio: 1.5),
+(min-resolution: 120dpi) {
+    .app-main {
+        transform: scale(0.665, 0.665);
+        缩放数值需要根据效果调试
+        transform-origin: left top;
+    }
+} */
+
+/* 屏幕分辨率放大为 125 */
+/* @media (-webkit-min-device-pixel-ratio: 1.25) {
+
+    工具条
+    .bottom-toolbar {
+        text-align: center;
+        position: absolute;
+        z-index: 10;
+        color: #fff;
+        background: rgba(17, 17, 17, 0.88);
+        font-size: 0.5rem;
+        display: -webkit-flex;
+        display: flex;
+        left: 50%;
+        transform: translate(-50%, 0);
+        bottom: 20px;
+        top: auto;
+    }
+
+    .bottom-toolbar .tool-btn {
+        opacity: .7;
+        width: 1.8em;
+        height: 2em;
+        line-height: 1em;
+        vertical-align: middle;
+        color: #fff;
+        padding: 0.4em;
+        cursor: pointer;
+        position: relative;
+        border-bottom: 4px solid #333;
+        font-weight: 100;
+    }
+
+    .bottom-toolbar .tool-btn:hover {
+        opacity: 1;
+    }
+
+    .bottom-toolbar .tool-btn>img {
+        -webkit-filter: grayscale(100%);
+        -o-filter: grayscale(100%);
+        -moz-filter: grayscale(100%);
+        -ms-filter: grayscale(100%);
+        filter: grayscale(100%);
+        width: 100%;
+        height: 100%;
+        vertical-align: top;
+    }
+
+    .bottom-toolbar .tool-btn.bf-checked {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-bottom: 4px solid #568491;
+        opacity: 1;
+    }
+
+    #clipMobile-btns .tool-btn {
+        font-weight: 300;
+    }
+
+    .bottom-toolbar .tool-btn .popup {
+        position: absolute;
+        top: -2em;
+        z-index: 11;
+        left: 50%;
+        transform: translate(-50%, 0);
+        background: rgba(17, 17, 17, 0.88);
+        opacity: 1;
+        display: flex;
+        border-bottom: 1px solid #fff;
+    }
+
+    .bottom-toolbar .tool-btn .btnTip {
+        display: none;
+    }
+} */
+
+
+/*测量开始*/
+.elevationStyle {
+    margin: 0;
+    padding: 0;
+    width: 100px;
+    height: 100px;
+}
+.measure-setting {
+    resize: none;
+    display: block;
+    top: 179px;
+    width: 150px;
+    right: 50px;
+    color: rgb(255, 255, 255);
+    max-height: 702px;
+    max-width: 396px;
+    font-size: 12px;
+    display: none;
+    z-index: 9999;
+}
+.docking-panel-close-measure {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 5px 10px 5px 0;
+    text-transform: uppercase;
+    font-size: 14px;
+    line-height: 24px;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.docking-panel-enlarge-measure {
+    display: inline-block;
+    width: 30px;
+    height: 34px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 7px 5px 7px;
+    display: none;
+}
+
+.docking-panel-enlarge-measure img {
+    width: 100%;
+    height: 100%;
+}
+
+.measure-setting-area {
+    position: relative;
+    display: flex;
+    margin: 0.1rem;
+}
+
+.measure-esc-tip {
+    position: absolute;
+    display: none;
+}
+
+.measure-esc-tip span {
+    position: relative;
+    border: 1px solid red;
+    border-radius: 5px;
+    top: -0.15rem;
+    background: #999999;
+    padding: 0 0.05rem;
+}
+
+.measure-child-btn {
+    cursor: pointer;
+    width: 20%;
+    height: 100%;
+    position: relative;
+    text-align: center;
+}
+.measure-child-btn img {
+    width: 32px;
+    height: 32px;
+}
+
+.measure-child-btn-text {
+    color: white;
+    margin: 0.05rem
+}
+
+.lineLabel {
+    position: absolute;
+    color: #ff6600;
+    font-family: sans-serif;
+    padding: 2px;
+    font-size: 16px;
+    width: 30px;
+    height: 20px;
+}
+
+.point {
+    position: absolute;
+    padding: 2px;
+    width: 5px;
+    height: 5px;
+    border: 2px solid white;
+    border-radius: 1rem;
+    background: #ff6600;
+}
+
+.triangle {
+    color: #ff6600;
+    width: 0px;
+    /*  宽高设置为0，很重要，否则达不到效果 */
+    height: 0px;
+    border: 20px solid #ff6600;
+    border-bottom-color: transparent;
+    /* 设置透明背景色 */
+    border-left-color: transparent;
+    border-right-color: transparent;
+}
+
+.triangleLine {
+    position: absolute;
+    left: 20px;
+    top: -20px;
+    width: 80px;
+    /*  宽高设置为0，很重要，否则达不到效果 */
+    height: 3px;
+    background: #e0a800;
+    font-size: 16px;
+}
+
+.triangleText {
+    position: absolute;
+    left: 60px;
+    color: #ff6600;
+    font-size: 18px
+}
+
+.drawFrame {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border: 3px solid #1c7430;
+}
+
+.drawSvg {
+    width: 100px;
+    height: 100px;
+}
+
+.polyline {
+    stroke: #ff6600;
+    stroke-width: 2;
+    /* 线段宽度 */
+    fill: none;
+    /* 描绘不填充 */
+}
+.mobile-measure-handle {
+    position: absolute;
+    left: .5rem;
+    top: 1.2rem;
+    font-size: 0;
+    display: none;
+    text-align: left;
+}
+
+.mobile-measure-handle .mobile-mea-pos {
+    position: relative;
+    display: inline-block;
+}
+
+.mobile-measure-handle .mobile-mea-pos::after {
+    position: absolute;
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    background: red;
+    left: 6px;
+}
+
+.mobile-measure-handle .mobile-mea-handle-area {
+    position: relative;
+    left: -8px;
+    top: -12px;
+}
+.mobile-measure-handle .mobile-mea-handle-area::before {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    content: '';
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, .7);
+}
+.mobile-measure-handle .mobile-mea-handle-area span {
+    /* position: absolute;
+    content: ''; */
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, .5);
+}
+
+@media (max-width: 750px),
+(max-height: 750px) {
+    .measure-setting {
+        width: auto !important;
+        min-width: auto;
+        min-height: auto;
+        top: .3rem;
+        left: .3rem;
+        right: auto;
+    }
+
+    .measure-child-btn {
+        width: 0.9rem;
+        padding: 0 .1rem .15rem;
+    }
+
+    .measure-child-btn div:first-child {
+        text-align: center;
+        width: .5rem;
+        height: .5rem;
+        margin: .1rem .1rem .2rem;
+    }
+
+    .measure-child-btn img {
+        width: 100%;
+        height: 100%;
+    }
+
+    .measure-child-btn .measure-child-btn-text {
+        font-size: .24rem;
+        margin: -.1rem 0 0 0;
+    }
+    /* 横屏 */
+    @media (orientation: landscape) {
+        .measure-setting {
+            width: auto !important;
+            min-width: auto;
+            top: .3rem;
+            left: auto;
+            right: 2rem;
+        }
+
+    }
+}
+/*测量结束*/

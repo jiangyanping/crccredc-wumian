@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,maximum-scale=1,user-scalable=no"
+    />
+    <script type="text/javascript" src="./static/js/fontSizeFixble.js"></script>
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="./static/css/photoswipe.css" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="./static/css/default-skin.css"
+    />
+    <link rel="stylesheet" type="text/css" href="engine/css/web3d-ui.css" />
+    <title> </title>
+    <style type="text/css">
+      html,
+      body {
+        height: 100%;
+      }
+      .pswp {
+        z-index: 15000 !important;
+      }
+      .pswp__top-bar {
+        background-color: rgba(0, 0, 0, 0) !important;
+      }
+      .pswp__button--share,
+      .pswp__button--fs,
+      .pswp__button--zoom {
+        display: none !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app"></div>
+    <!-- <div id="container"></div> -->
+    <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+      <!-- Background of PhotoSwipe.
+        It's a separate element, as animating opacity is faster than rgba(). -->
+      <div class="pswp__bg"></div>
+      <!-- Slides wrapper with overflow:hidden. -->
+      <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. PhotoSwipe keeps only 3 slides in DOM to save memory. -->
+        <div class="pswp__container">
+          <!-- don't modify these 3 pswp__item elements, data is added later on -->
+          <div class="pswp__item"></div>
+          <div class="pswp__item"></div>
+          <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+          <div class="pswp__top-bar">
+            <!-- Controls are self-explanatory. Order can be changed. -->
+            <div class="pswp__counter"></div>
+            <button
+              class="pswp__button pswp__button--close"
+              title="Close (Esc)"
+              style="color: #000;height: .5rem;width: .5rem;line-height: .5rem;background: #fff;text-align: center;position: absolute;right: .24rem;top: .24rem;z-index: 10;cursor: pointer;font-size: .3rem;font-weight: bold;opacity: .8"
+            >
+              X
+            </button>
+            <button
+              class="pswp__button pswp__button--share"
+              title="Share"
+            ></button>
+            <button
+              class="pswp__button pswp__button--fs"
+              title="Toggle fullscreen"
+            ></button>
+            <button
+              class="pswp__button pswp__button--zoom"
+              title="Zoom in/out"
+            ></button>
+            <!-- Preloader demo https://codepen.io/dimsemenov/pen/yyBWoR
+                    element will get class pswp__preloader--active when preloader is running -->
+            <div class="pswp__preloader">
+              <div class="pswp__preloader__icn">
+                <div class="pswp__preloader__cut">
+                  <div class="pswp__preloader__donut"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"
+          >
+            <div class="pswp__share-tooltip"></div>
+          </div>
+          <button
+            class="pswp__button pswp__button--arrow--left"
+            title="Previous (arrow left)"
+          ></button>
+          <button
+            class="pswp__button pswp__button--arrow--right"
+            title="Next (arrow right)"
+          ></button>
+          <div class="pswp__caption">
+            <div class="pswp__caption__center"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- built files will be auto injected -->
+    <script src="./engine/jquery.min.js"></script>
+    <script src="./engine/three.73ddf5705e795ccbfa63.js"></script>
+    <script src="./engine/vendors.5f412ba96ce45fda237e.js"></script>
+    <script src="./engine/web3d-engine.92623b4189c18edd69e1.js"></script>
+    <script src="./engine/web3d-ui.b53a89c6627be2de2661.js"></script>
+  </body>
+</html>
